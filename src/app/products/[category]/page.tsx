@@ -3,7 +3,7 @@
 import type React from "react"
 
 import { useState, useEffect } from "react"
-import { notFound } from "next/navigation"
+import {notFound, useParams} from "next/navigation"
 import Link from "next/link"
 import { ChevronRight, Filter, X } from "lucide-react"
 
@@ -15,8 +15,8 @@ import { featuredWigs, featuredFrontals, featuredTools } from "@/src/lib/product
 import type { Product } from "@/src/lib/types"
 import { useFilter } from "@/src/lib/context/filter-context"
 
-export default function CategoryPage({ params }: { params: { category: string } }) {
-  const { category } = params
+export default function CategoryPage() {
+  const { category } = useParams<{ category: string }>()
   const { filters, updatePriceRange, updateHairType, updateSortBy } = useFilter()
 
   // State for mobile filter drawer
