@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { notFound } from "next/navigation"
+import {notFound, useParams} from "next/navigation"
 import Image from "next/image"
 import Link from "next/link"
 import {
@@ -25,8 +25,8 @@ import { useCart } from "@/src/lib/context/cart-context"
 import { useWishlist } from "@/src/lib/context/wishlist-context"
 import { useToast } from "@/src/hooks/use-toast"
 
-export default function ProductPage({ params }: { params: { category: string; id: string } }) {
-  const { category, id } = params
+export default function ProductPage() {
+  const { category, id } = useParams<{ category: string,id:any }>()
   const [quantity, setQuantity] = useState(1)
   const { addToCart } = useCart()
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist()
