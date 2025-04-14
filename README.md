@@ -1,4 +1,4 @@
-# PhayiHairline E-commerce Website
+# PhayiHairline Website
 
 A modern e-commerce website for PhayiHairline, a premium wig and hair products store.
 
@@ -21,11 +21,12 @@ A modern e-commerce website for PhayiHairline, a premium wig and hair products s
 - shadcn/ui components
 - Lucide React icons
 - next-themes for dark mode
+- Firebase (Authentication, Firestore, Storage)
 
 ## Getting Started
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/phayi-hairline.git
+git clone https://github.com/LemonOD/phayi-hairline.git
 cd phayi-hairline
 

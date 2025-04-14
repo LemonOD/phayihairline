@@ -10,7 +10,7 @@ import { ChevronRight, Filter, X } from "lucide-react"
 import { Button } from "@/src/components/ui/button"
 import { Checkbox } from "@/src/components/ui/checkbox"
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/src/components/ui/sheet"
-import ProductCard from "@/src/components/product-card"
+import {ProductCard} from "@/src/components/product-card"
 import { featuredWigs, featuredFrontals, featuredTools } from "@/src/lib/products"
 import type { Product } from "@/src/lib/types"
 import { useFilter } from "@/src/lib/context/filter-context"
@@ -151,7 +151,7 @@ export default function CategoryPage() {
           Home
         </Link>
         <ChevronRight className="h-4 w-4 mx-1" />
-        <Link href="/products" className="hover:text-primary">
+        <Link href="/src/app/admin/products" className="hover:text-primary">
           Products
         </Link>
         <ChevronRight className="h-4 w-4 mx-1" />

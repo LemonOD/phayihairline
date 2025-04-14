@@ -39,17 +39,17 @@ export default function SiteFooter() {
                 </Link>
               </li>
               <li>
-                <Link href="/products/wigs" className="text-muted-foreground hover:text-primary transition-colors">
+                <Link href="/src/app/products/wigs" className="text-muted-foreground hover:text-primary transition-colors">
                   Wigs
                 </Link>
               </li>
               <li>
-                <Link href="/products/frontals" className="text-muted-foreground hover:text-primary transition-colors">
+                <Link href="/src/app/products/frontals" className="text-muted-foreground hover:text-primary transition-colors">
                   Frontals
                 </Link>
               </li>
               <li>
-                <Link href="/products/tools" className="text-muted-foreground hover:text-primary transition-colors">
+                <Link href="/src/app/products/tools" className="text-muted-foreground hover:text-primary transition-colors">
                   Wigging Tools
                 </Link>
               </li>

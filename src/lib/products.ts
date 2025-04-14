@@ -8,7 +8,7 @@ export const featuredWigs: Product[] = [
     price: 45000,
     originalPrice: 55000,
     discount: 18,
-    image: "/placeholder.svg?height=400&width=300",
+    image: "/images/prod.png?height=400&width=300",
     category: "wigs",
     inStock: true,
     rating: 4.8,

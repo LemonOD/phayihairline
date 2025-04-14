@@ -13,12 +13,12 @@ export default function AboutPage() {
           <div>
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 text-primary">About PhayiHairline</h1>
             <p className="text-lg text-muted-foreground mb-6">
-              We are passionate about helping women look and feel their best with premium quality wigs, frontals, and
-              professional wigging tools.
+              We are passionate about helping women look and feel their best with premium quality wigs.
             </p>
             <p className="text-lg text-muted-foreground mb-6">
-              Founded in 2018, PhayiHairline has grown to become one of the most trusted names in the hair industry in
-              Lagos, Nigeria, known for our commitment to quality and customer satisfaction.
+              PhayiHairline was founded by Oyindamola Fayizat Lemon with a passion for providing premium
+              quality wigs to our customers. What started as a small home-based
+              business has now grown into a reputable brand recognized for quality and customer satisfaction.
             </p>
             <Button asChild size="lg">
               <Link href="/contact">Contact Us</Link>
@@ -40,8 +40,9 @@ export default function AboutPage() {
         <div className="text-center mb-10">
           <h2 className="text-3xl font-bold mb-4 text-primary">Our Mission</h2>
           <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-            To provide women with high-quality hair products and exceptional services that enhance their natural beauty
-            and boost their confidence.
+            Our mission is to help every woman feel confident and beautiful with
+            high-quality hair products that are accessible and affordable.
+            We believe that everyone deserves to look and feel their best.
           </p>
         </div>
         <div className="grid md:grid-cols-3 gap-8">
@@ -191,7 +192,7 @@ export default function AboutPage() {
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Button asChild variant="secondary" size="lg">
-            <Link href="/products/wigs">Shop Now</Link>
+            <Link href="/src/app/products/wigs">Shop Now</Link>
           </Button>
           <Button
             asChild

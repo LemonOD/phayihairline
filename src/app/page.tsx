@@ -1,19 +1,34 @@
 import Link from "next/link"
 import Image from "next/image"
-import { ShoppingBag, ChevronRight } from "lucide-react"
+import {ShoppingBag, ChevronRight, ArrowRight} from "lucide-react"
 
 import { Button } from "@/src/components/ui/button"
 import { AnimatedGradientBorder } from "@/src/components/ui-enhancements/animated-gradient-border"
-import ProductCard from "@/src/components/product-card"
-import { featuredWigs, featuredFrontals, featuredTools } from "@/src/lib/products"
+import {ProductCard} from "@/src/components/product-card"
+import { getFeaturedProducts } from "@/src/lib/firebase/products"
+import { featuredFrontals, featuredTools, } from "@/src/lib/products"
+import {Suspense} from "react";
 
+// This is a Server Component that fetches featured products
+async function FeaturedProducts() {
+  const featuredProducts = await getFeaturedProducts(8)
+
+  console.log(featuredProducts)
+
+  return (
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        {featuredProducts.map((product) => (
+            <ProductCard key={product.id} product={product} />
+        ))}
+      </div>
+  )
+}
 export default function Home() {
   return (
     <div className="flex flex-col min-h-screen">
-      {/* Hero Section */}
       <section className="relative w-full h-[60vh] md:h-[70vh]">
         <Image
-          src="/placeholder.svg?height=800&width=1200"
+          src="/images/phay.jpg?height=800&width=1200"
           alt="Beautiful woman wearing a wig"
           fill
           className="object-cover"
@@ -76,19 +91,29 @@ export default function Home() {
       </section>
 
       {/* Featured Products */}
-      <section className="py-12 px-4 md:px-6 lg:px-8">
-        <div className="container mx-auto">
+      <section className="py-12 md:py-16">
+        <div className="container px-4 md:px-6">
           <div className="flex justify-between items-center mb-8">
-            <h2 className="text-2xl md:text-3xl font-bold">Featured Wigs</h2>
-            <Link href="/products/wigs" className="text-primary flex items-center hover:underline">
-              View All <ChevronRight className="h-4 w-4 ml-1" />
-            </Link>
+            <h2 className="text-2xl md:text-3xl font-bold">Featured Products</h2>
+            <Button variant="outline" asChild>
+              <Link href="/products">
+                View All <ArrowRight className="ml-1 h-4 w-4" />
+              </Link>
+            </Button>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {featuredWigs.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
+          <Suspense
+              fallback={
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                  {Array(8)
+                      .fill(0)
+                      .map((_, i) => (
+                          <div key={i} className="rounded-lg bg-muted animate-pulse h-[300px]"></div>
+                      ))}
+                </div>
+              }
+          >
+            <FeaturedProducts />
+          </Suspense>
         </div>
       </section>
 
@@ -182,17 +207,7 @@ export default function Home() {
   )
 }
 
-function CategoryCard({
-  title,
-  image,
-  link,
-  description,
-}: {
-  title: string
-  image: string
-  link: string
-  description: string
-}) {
+function CategoryCard({title, image, link, description}: { title: string,image: string,link: string,description: string }) {
   return (
     <Link href={link} className="group h-full">
       <div className="bg-background rounded-lg overflow-hidden shadow-md transition-all duration-300 hover:shadow-lg h-full">

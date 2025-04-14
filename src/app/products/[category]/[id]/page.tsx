@@ -82,11 +82,11 @@ export default function ProductPage() {
           Home
         </Link>
         <ChevronRight className="h-4 w-4 mx-1" />
-        <Link href="/products" className="hover:text-primary">
+        <Link href="/src/app/admin/products" className="hover:text-primary">
           Products
         </Link>
         <ChevronRight className="h-4 w-4 mx-1" />
-        <Link href={`/products/${category}`} className="hover:text-primary capitalize">
+        <Link href={`/src/app/admin/products/${category}`} className="hover:text-primary capitalize">
           {category}
         </Link>
         <ChevronRight className="h-4 w-4 mx-1" />
@@ -383,7 +383,7 @@ export default function ProductPage() {
                 key={relatedProduct.id}
                 className="group bg-background rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300"
               >
-                <Link href={`/products/${relatedProduct.category}/${relatedProduct.id}`}>
+                <Link href={`/src/app/admin/products/${relatedProduct.category}/${relatedProduct.id}`}>
                   <div className="relative h-64 overflow-hidden">
                     <Image
                       src={relatedProduct.image || "/placeholder.svg"}
@@ -399,7 +399,7 @@ export default function ProductPage() {
                   </div>
                 </Link>
                 <div className="p-4">
-                  <Link href={`/products/${relatedProduct.category}/${relatedProduct.id}`}>
+                  <Link href={`/src/app/admin/products/${relatedProduct.category}/${relatedProduct.id}`}>
                     <h3 className="font-medium text-lg mb-1 group-hover:text-primary transition-colors">
                       {relatedProduct.name}
                     </h3>

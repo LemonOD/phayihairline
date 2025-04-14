@@ -11,5 +11,15 @@ export interface Product {
   rating: number
   reviews: number
   features: string[]
+  createdAt?: any // Firestore timestamp
+  updatedAt?: any // Firestore timestamp
+}
+
+export interface User {
+  uid: string;
+  email: string;
+  displayName?: string;
+  photoURL?: string;
+  role: 'admin' | 'customer';
 }
 

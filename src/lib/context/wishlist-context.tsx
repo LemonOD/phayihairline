@@ -1,27 +1,50 @@
 "use client"
 
 import { createContext, useContext, useState, useEffect, type ReactNode } from "react"
-import type { Product } from "@/src/lib/types"
+import type { Product } from "@/src/lib/firebase/products"
 
-interface WishlistContextType {
-  wishlistItems: Product[]
+type WishlistItem = {
+  id: string
+  name: string
+  price: number
+  image?: string
+  category: string
+  description?: string
+  originalPrice?: number | null
+  discount?: number
+  images?: string[]
+  features?: string[]
+  stock?: number
+  rating?: number
+  reviews?: number
+  tags?: string[]
+}
+
+type WishlistContextType = {
+  wishlist: WishlistItem[]
   addToWishlist: (product: Product) => void
   removeFromWishlist: (productId: string) => void
   isInWishlist: (productId: string) => boolean
-  getWishlistCount: () => number
+  clearWishlist: () => void
 }
 
-const WishlistContext = createContext<WishlistContextType | undefined>(undefined)
+const WishlistContext = createContext<WishlistContextType>({
+  wishlist: [],
+  addToWishlist: () => {},
+  removeFromWishlist: () => {},
+  isInWishlist: () => false,
+  clearWishlist: () => {},
+})
 
 export function WishlistProvider({ children }: { children: ReactNode }) {
-  const [wishlistItems, setWishlistItems] = useState<Product[]>([])
+  const [wishlist, setWishlist] = useState<WishlistItem[]>([])
 
   // Load wishlist from localStorage on initial render
   useEffect(() => {
     const savedWishlist = localStorage.getItem("wishlist")
     if (savedWishlist) {
       try {
-        setWishlistItems(JSON.parse(savedWishlist))
+        setWishlist(JSON.parse(savedWishlist))
       } catch (error) {
         console.error("Failed to parse wishlist from localStorage:", error)
       }
@@ -30,53 +53,70 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
 
   // Save wishlist to localStorage whenever it changes
   useEffect(() => {
-    localStorage.setItem("wishlist", JSON.stringify(wishlistItems))
-  }, [wishlistItems])
+    localStorage.setItem("wishlist", JSON.stringify(wishlist))
+  }, [wishlist])
 
   const addToWishlist = (product: Product) => {
-    setWishlistItems((prevItems) => {
-      const existingItem = prevItems.find((item) => item.id === product.id)
+    setWishlist((prevWishlist) => {
+      // Check if product already exists in wishlist
+      const existingItem = prevWishlist.find((item) => item.id === product.id)
 
       if (existingItem) {
-        return prevItems
+        // If product exists, don't add it again
+        return prevWishlist
       } else {
-        return [...prevItems, product]
+        // If product doesn't exist, add it
+        return [
+          ...prevWishlist,
+          {
+            id: product.id,
+            name: product.name,
+            price: product.price,
+            image: product.image,
+            category: product.category,
+            description: product.description,
+            originalPrice: product.originalPrice,
+            discount: product.discount,
+            images: product.images,
+            features: product.features,
+            stock: product.stock,
+            rating: product.rating,
+            reviews: product.reviews,
+            tags: product.tags,
+          },
+        ]
       }
     })
   }
 
   const removeFromWishlist = (productId: string) => {
-    setWishlistItems((prevItems) => prevItems.filter((item) => item.id !== productId))
+    setWishlist((prevWishlist) => prevWishlist.filter((item) => item.id !== productId))
   }
 
   const isInWishlist = (productId: string) => {
-    return wishlistItems.some((item) => item.id === productId)
+    return wishlist.some((item) => item.id === productId)
   }
 
-  const getWishlistCount = () => {
-    return wishlistItems.length
+  const clearWishlist = () => {
+    setWishlist([])
   }
 
   return (
-    <WishlistContext.Provider
-      value={{
-        wishlistItems,
-        addToWishlist,
-        removeFromWishlist,
-        isInWishlist,
-        getWishlistCount,
-      }}
-    >
-      {children}
-    </WishlistContext.Provider>
+      <WishlistContext.Provider
+          value={{
+            wishlist,
+            addToWishlist,
+            removeFromWishlist,
+            isInWishlist,
+            clearWishlist,
+          }}
+      >
+        {children}
+      </WishlistContext.Provider>
   )
 }
 
 export function useWishlist() {
-  const context = useContext(WishlistContext)
-  if (context === undefined) {
-    throw new Error("useWishlist must be used within a WishlistProvider")
-  }
-  return context
+  return useContext(WishlistContext)
 }
 
