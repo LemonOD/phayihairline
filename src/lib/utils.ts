@@ -26,4 +26,11 @@ export const siteConfig = {
   phone: "08155217967",
   email: "info@phayihairline.com",
   address: "Adamo, Ikorodu, Lagos State, Nigeria",
+  /** TODO(owner): confirm these before relying on them; they feed the contact page and Google structured data. */
+  hours: { days: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"], opens: "09:00", closes: "18:00", label: "Mon – Sat, 9:00am – 6:00pm" },
+  /** Only rendered when set in env, so we never link to an account that doesn't exist. */
+  socials: [
+    { platform: "instagram" as const, url: process.env.NEXT_PUBLIC_INSTAGRAM_URL },
+    { platform: "tiktok" as const, url: process.env.NEXT_PUBLIC_TIKTOK_URL },
+  ].filter((s): s is { platform: "instagram" | "tiktok"; url: string } => !!s.url),
 }

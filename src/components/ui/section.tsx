@@ -9,7 +9,7 @@ export function SectionHeading({ eyebrow, title, description, className }: {
 }) {
   return (
     <div className={cn("mx-auto mb-10 max-w-2xl text-center", className)}>
-      {eyebrow && <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-accent">{eyebrow}</p>}
+      {eyebrow && <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-accent-text">{eyebrow}</p>}
       <h2 className="text-3xl font-semibold md:text-4xl">{title}</h2>
       {description && <p className="mt-3 text-muted-foreground">{description}</p>}
     </div>

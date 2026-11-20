@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next"
 import { Inter, Playfair_Display } from "next/font/google"
+import { Analytics } from "@vercel/analytics/next"
 import "./globals.css"
 import { Providers } from "@/components/layout/providers"
 import { SiteHeader } from "@/components/layout/site-header"
@@ -11,10 +12,12 @@ const playfair = Playfair_Display({ subsets: ["latin"], variable: "--font-playfa
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
-  title: { default: "PhayiHairline — Premium Wigs, Frontals & Wigging Tools", template: "%s · PhayiHairline" },
+  title: { default: "Wigs, Frontals & Wig Installation in Ikorodu, Lagos · PhayiHairline", template: "%s · PhayiHairline" },
+  alternates: { canonical: "./" },
   description:
     "Shop premium human hair wigs, lace frontals and wigging tools. Professional wig installation in Adamo, Ikorodu, Lagos.",
   openGraph: { siteName: siteConfig.name, type: "website", locale: "en_NG" },
+  twitter: { card: "summary_large_image" },
 }
 
 export const viewport: Viewport = {
@@ -26,13 +29,18 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning className={`${inter.variable} ${playfair.variable}`}>
+    <html lang="en-NG" suppressHydrationWarning className={`${inter.variable} ${playfair.variable}`}>
       <body className="min-h-screen antialiased">
+        <a href="#main"
+          className="sr-only z-[60] rounded-md bg-primary px-4 py-2 text-primary-foreground focus:not-sr-only focus:fixed focus:left-4 focus:top-4">
+          Skip to content
+        </a>
         <Providers>
           <SiteHeader />
-          <main className="min-h-[70vh]">{children}</main>
+          <main id="main" tabIndex={-1} className="min-h-[70vh] outline-none">{children}</main>
           <SiteFooter />
         </Providers>
+        {process.env.VERCEL && <Analytics />}
       </body>
     </html>
   )

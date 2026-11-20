@@ -14,8 +14,8 @@ export function TrustStrip() {
       <Container className="grid gap-8 md:grid-cols-3">
         {items.map(({ icon: Icon, title, text }, i) => (
           <Reveal key={title} delay={i * 0.1} className="flex gap-4">
-            <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-accent/20 text-accent"><Icon className="size-5" /></span>
-            <div><h3 className="font-sans font-semibold">{title}</h3><p className="text-sm text-muted-foreground">{text}</p></div>
+            <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-accent/20 text-accent-text"><Icon className="size-5" /></span>
+            <div><h2 className="font-sans text-base font-semibold">{title}</h2><p className="text-sm text-muted-foreground">{text}</p></div>
           </Reveal>
         ))}
       </Container>

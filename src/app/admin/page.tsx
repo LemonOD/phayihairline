@@ -18,7 +18,7 @@ export default async function AdminOverview() {
         <StaggerItem key={label}>
           <Link href={href}>
             <Card className="p-5 transition-shadow hover:shadow-md">
-              <Icon className="mb-3 size-5 text-accent" />
+              <Icon className="mb-3 size-5 text-accent-text" />
               <p className="text-3xl font-semibold tabular-nums">{value}</p>
               <p className="text-sm text-muted-foreground">{label}</p>
             </Card>

@@ -36,7 +36,8 @@ export function WishlistButton({ product, className }: { product: Product; class
   )
 }
 
-export function ProductCard({ product }: { product: Product }) {
+export function ProductCard({ product, headingLevel = 3 }: { product: Product; headingLevel?: 2 | 3 }) {
+  const Heading = `h${headingLevel}` as const
   const add = useCart((s) => s.add)
   const discount = discountPercent(product.price, product.compare_at_price)
   const soldOut = product.stock < 1
@@ -60,7 +61,7 @@ export function ProductCard({ product }: { product: Product }) {
       </div>
 
       <div className="space-y-2 p-4">
-        <Link href={href}><h3 className="line-clamp-1 font-sans text-base font-medium">{product.name}</h3></Link>
+        <Link href={href}><Heading className="line-clamp-1 font-sans text-base font-medium">{product.name}</Heading></Link>
         <RatingLine rating={product.rating} count={product.review_count} />
         <div className="flex items-end justify-between gap-2">
           <div>

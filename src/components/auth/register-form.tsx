@@ -20,7 +20,7 @@ export function RegisterForm() {
   if (data?.needsConfirmation) {
     return (
       <div className="space-y-3 py-4 text-center">
-        <MailCheck className="mx-auto size-12 text-accent" />
+        <MailCheck className="mx-auto size-12 text-accent-text" />
         <p className="font-medium">Check your inbox</p>
         <p className="text-sm text-muted-foreground">We sent a confirmation link. Open it to activate your account.</p>
       </div>

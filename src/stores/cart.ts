@@ -1,5 +1,6 @@
 import { create } from "zustand"
 import { persist } from "zustand/middleware"
+import { track } from "@/lib/analytics"
 import type { Product, ProductVariant } from "@/types"
 
 export const lineKey = (productId: string, variantId?: string | null) => `${productId}:${variantId ?? ""}`
@@ -40,6 +41,7 @@ export const useCart = create<CartState>()(
       add: (p, quantity = 1, variant = null) =>
         set((s) => {
           const key = lineKey(p.id, variant?.id)
+          track("add_to_cart", { product: p.name, value: variant?.price ?? p.price })
           const stock = variant ? variant.stock : p.stock
           const existing = s.lines.find((l) => l.key === key)
           if (existing) {

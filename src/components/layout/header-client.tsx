@@ -15,7 +15,7 @@ import { useWishlist } from "@/stores/wishlist"
 import { useMounted } from "@/hooks/use-mounted"
 import { cn } from "@/lib/utils"
 
-type Props = { logo: React.ReactNode; user: { name: string; isAdmin: boolean } | null }
+type Props = { logo: React.ReactNode }
 
 function CountBadge({ count }: { count: number }) {
   return (
@@ -33,7 +33,7 @@ function CountBadge({ count }: { count: number }) {
   )
 }
 
-export function HeaderClient({ logo, user }: Props) {
+export function HeaderClient({ logo }: Props) {
   const pathname = usePathname()
   const [menuOpen, setMenuOpen] = useState(false)
   const mounted = useMounted()
@@ -74,7 +74,7 @@ export function HeaderClient({ logo, user }: Props) {
           <ShoppingBag />
           <CountBadge count={mounted ? cart : 0} />
         </Button>
-        <UserMenu user={user} />
+        <UserMenu />
       </div>
 
       <AnimatePresence>

@@ -1,5 +1,6 @@
 import Image from "next/image"
 import { Sparkles } from "lucide-react"
+import { blurDataURL } from "@/lib/blur"
 import { cn } from "@/lib/utils"
 
 type Props = { src?: string | null; alt: string; className?: string; sizes?: string; priority?: boolean }
@@ -9,10 +10,10 @@ export function ProductImage({ src, alt, className, sizes = "(max-width:768px) 5
   if (!src) {
     return (
       <div className={cn("flex size-full items-center justify-center bg-gradient-to-br from-secondary to-muted", className)}>
-        <Sparkles className="size-8 text-accent" aria-hidden />
+        <Sparkles className="size-8 text-accent-text" aria-hidden />
         <span className="sr-only">{alt}</span>
       </div>
     )
   }
-  return <Image src={src} alt={alt} fill sizes={sizes} priority={priority} className={cn("object-cover", className)} />
+  return <Image src={src} alt={alt} fill sizes={sizes} priority={priority} placeholder="blur" blurDataURL={blurDataURL} className={cn("object-cover", className)} />
 }

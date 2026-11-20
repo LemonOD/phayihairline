@@ -7,6 +7,8 @@ import { ProductGrid } from "@/components/shop/product-grid"
 import { Button } from "@/components/ui/button"
 import { Reveal } from "@/components/ui/motion"
 import { Container, SectionHeading } from "@/components/ui/section"
+import { JsonLd } from "@/components/layout/json-ld"
+import { localBusinessJsonLd } from "@/lib/seo"
 import { getCategories, getFeaturedProducts } from "@/lib/data/catalog"
 
 export const revalidate = 60
@@ -16,6 +18,7 @@ export default async function HomePage() {
 
   return (
     <>
+      <JsonLd data={localBusinessJsonLd()} />
       <Hero />
       <TrustStrip />
       <CategoryTiles categories={categories} />

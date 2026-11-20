@@ -5,7 +5,7 @@ const config = [
   ...nextVitals,
   ...nextTs,
   { rules: { "max-lines": ["error", { max: 250 }] } },
-  { ignores: [".next/**", "node_modules/**", "next-env.d.ts"] },
+  { ignores: [".next/**", "node_modules/**", "next-env.d.ts", "playwright-report/**", "test-results/**"] },
 ]
 
 export default config

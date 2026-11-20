@@ -69,3 +69,12 @@ export async function getRelatedProducts(product: Product, limit = 4): Promise<P
     .limit(limit)
   return (data as Product[]) ?? []
 }
+
+/** Lightweight list for sitemap and static generation. */
+export async function getProductSlugs(): Promise<{ category: string; slug: string; updated_at: string }[]> {
+  const { data } = await createPublicClient()
+    .from("products")
+    .select("category, slug, updated_at")
+    .eq("is_active", true)
+  return (data as { category: string; slug: string; updated_at: string }[]) ?? []
+}

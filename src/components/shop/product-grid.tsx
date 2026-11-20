@@ -2,11 +2,12 @@ import { Stagger, StaggerItem } from "@/components/ui/motion"
 import { ProductCard } from "./product-card"
 import type { Product } from "@/types"
 
-export function ProductGrid({ products }: { products: Product[] }) {
+/** `headingLevel` should be one below the section heading that precedes the grid. */
+export function ProductGrid({ products, headingLevel = 3 }: { products: Product[]; headingLevel?: 2 | 3 }) {
   return (
     <Stagger className="grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-3 xl:grid-cols-4">
       {products.map((p) => (
-        <StaggerItem key={p.id}><ProductCard product={p} /></StaggerItem>
+        <StaggerItem key={p.id}><ProductCard product={p} headingLevel={headingLevel} /></StaggerItem>
       ))}
     </Stagger>
   )

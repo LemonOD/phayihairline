@@ -58,7 +58,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
         <Suspense><ProductFilters total={products.length} /></Suspense>
 
         {products.length ? (
-          <ProductGrid products={products} />
+          <ProductGrid products={products} headingLevel={2} />
         ) : (
           <p className="rounded-lg border border-dashed py-16 text-center text-muted-foreground">
             No products match your filters.

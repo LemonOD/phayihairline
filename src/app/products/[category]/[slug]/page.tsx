@@ -9,10 +9,15 @@ import { StarRating } from "@/components/shop/star-rating"
 import { ProductGallery } from "@/components/shop/product-gallery"
 import { ProductGrid } from "@/components/shop/product-grid"
 import { PageTransition, Reveal } from "@/components/ui/motion"
+import { JsonLd } from "@/components/layout/json-ld"
 import { Container } from "@/components/ui/section"
-import { getProductBySlug, getRelatedProducts } from "@/lib/data/catalog"
+import { getProductBySlug, getProductSlugs, getRelatedProducts } from "@/lib/data/catalog"
 
 export const revalidate = 60
+
+export async function generateStaticParams() {
+  return (await getProductSlugs()).map(({ category, slug }) => ({ category, slug }))
+}
 
 type Props = { params: Promise<{ category: string; slug: string }> }
 
@@ -53,7 +58,7 @@ export default async function ProductPage({ params }: Props) {
 
   return (
     <PageTransition>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <JsonLd data={jsonLd} />
       <Container className="py-10">
         <nav aria-label="Breadcrumb" className="mb-6 flex items-center gap-1 text-sm text-muted-foreground">
           <Link href="/" className="hover:text-foreground">Home</Link><ChevronRight className="size-3" />
@@ -81,7 +86,7 @@ export default async function ProductPage({ params }: Props) {
             {product.features.length > 0 && (
               <ul className="grid gap-2 border-t pt-6 sm:grid-cols-2">
                 {product.features.map((f) => (
-                  <li key={f} className="flex items-center gap-2 text-sm"><Check className="size-4 text-accent" /> {f}</li>
+                  <li key={f} className="flex items-center gap-2 text-sm"><Check className="size-4 text-accent-text" /> {f}</li>
                 ))}
               </ul>
             )}

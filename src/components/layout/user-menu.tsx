@@ -5,11 +5,14 @@ import * as Menu from "@radix-ui/react-dropdown-menu"
 import { LayoutDashboard, LogOut, User } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { signOut } from "@/lib/actions/auth"
+import { useAuth } from "@/stores/auth"
 
 const item = "flex cursor-pointer items-center gap-2 rounded-sm px-2 py-2 text-sm outline-none data-[highlighted]:bg-muted"
 
-export function UserMenu({ user }: { user: { name: string; isAdmin: boolean } | null }) {
-  if (!user) {
+export function UserMenu() {
+  const user = useAuth()
+  if (user.status === "loading") return <div className="ml-1 h-8 w-[74px]" aria-hidden />
+  if (user.status === "anon") {
     return <Button asChild size="sm" className="ml-1"><Link href="/login">Sign in</Link></Button>
   }
 

@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { useState, useTransition } from "react"
+import { useEffect, useRef, useState, useTransition } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { motion } from "framer-motion"
@@ -14,6 +14,8 @@ import { Input, Textarea } from "@/components/ui/input"
 import { ProductImage } from "@/components/ui/product-image"
 import { placeOrder } from "@/lib/actions/orders"
 import { useCart, cartTotal } from "@/stores/cart"
+import { track } from "@/lib/analytics"
+import { usePrefill } from "@/hooks/use-prefill"
 import { useMounted } from "@/hooks/use-mounted"
 import { formatNaira } from "@/lib/utils"
 import { orderMessage, whatsappLink } from "@/lib/whatsapp"
@@ -28,16 +30,27 @@ type Values = z.infer<typeof schema>
 
 type Placed = { link: string; reference: string }
 
-export function CheckoutForm({ defaults }: { defaults: { name: string; phone: string } }) {
+export function CheckoutForm() {
   const mounted = useMounted()
   const { lines, clear } = useCart()
+  const started = useRef(false)
   const [placed, setPlaced] = useState<Placed | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [pending, start] = useTransition()
-  const { register, handleSubmit, formState: { errors } } = useForm<Values>({
+  const { register, handleSubmit, getValues, setValue, formState: { errors } } = useForm<Values>({
     resolver: zodResolver(schema),
-    defaultValues: { name: defaults.name, phone: defaults.phone, address: "" },
+    defaultValues: { name: "", phone: "", address: "" },
   })
+  usePrefill((p) => {
+    if (!getValues("name")) setValue("name", p.name)
+    if (!getValues("phone")) setValue("phone", p.phone)
+  })
+
+  useEffect(() => {
+    if (!mounted || started.current || lines.length === 0) return
+    started.current = true
+    track("begin_checkout", { items: lines.length, value: cartTotal(lines) })
+  }, [mounted, lines])
 
   if (placed) {
     return (
@@ -47,7 +60,7 @@ export function CheckoutForm({ defaults }: { defaults: { name: string; phone: st
         <h2 className="text-3xl font-semibold">Order {placed.reference} received</h2>
         <p className="text-muted-foreground">One last step: send your order to us on WhatsApp so we can confirm payment and delivery.</p>
         <Button asChild size="lg" variant="accent" className="w-full">
-          <a href={placed.link} target="_blank" rel="noopener noreferrer"><MessageCircle /> Continue on WhatsApp</a>
+          <a href={placed.link} target="_blank" rel="noopener noreferrer" onClick={() => track("whatsapp_click", { from: "checkout" })}><MessageCircle /> Continue on WhatsApp</a>
         </Button>
         <Button asChild variant="ghost"><Link href="/">Back to home</Link></Button>
       </motion.div>
@@ -71,6 +84,7 @@ export function CheckoutForm({ defaults }: { defaults: { name: string; phone: st
       if (!res.ok || !res.data) return setError(res.ok ? "Something went wrong" : res.error)
 
       const { reference, total } = res.data
+      track("order_placed", { items: lines.length, value: total })
       const message = orderMessage({ ...values, reference, total, items: lines })
       setPlaced({ reference, link: whatsappLink(message) })
       clear()

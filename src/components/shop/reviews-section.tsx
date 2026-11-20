@@ -1,28 +1,14 @@
-import Link from "next/link"
-import { BadgeCheck, Lock } from "lucide-react"
-import { ReviewForm } from "./review-form"
+import { BadgeCheck } from "lucide-react"
+import { ReviewGate } from "./review-gate"
 import { StarRating } from "./star-rating"
 import { Reveal } from "@/components/ui/motion"
-import { getEligibility, getReviews, summarize } from "@/lib/data/reviews"
+import { getReviews, summarize } from "@/lib/data/reviews"
 import type { Product } from "@/types"
 
 const dateFmt = new Intl.DateTimeFormat("en-NG", { dateStyle: "medium", timeZone: "Africa/Lagos" })
 
-function Gate({ state }: { state: "login" | "not-purchased" | "reviewed" }) {
-  const copy = {
-    login: <>Only verified buyers can review. <Link href="/login" className="underline">Sign in</Link> to continue.</>,
-    "not-purchased": "Only customers who bought this product can review it. Reviews unlock once your order is confirmed.",
-    reviewed: "Thanks, you've already reviewed this product.",
-  }[state]
-  return (
-    <p className="flex items-start gap-2 rounded-lg border border-dashed p-4 text-sm text-muted-foreground">
-      <Lock className="mt-0.5 size-4 shrink-0" /> <span>{copy}</span>
-    </p>
-  )
-}
-
 export async function ReviewsSection({ product }: { product: Product }) {
-  const [reviews, eligibility] = await Promise.all([getReviews(product.id), getEligibility(product.id)])
+  const reviews = await getReviews(product.id)
   const counts = summarize(reviews)
 
   return (
@@ -48,7 +34,7 @@ export async function ReviewsSection({ product }: { product: Product }) {
             </div>
           ) : <p className="text-muted-foreground">No reviews yet. Be the first once you&apos;ve received your order.</p>}
 
-          {eligibility === "ok" ? <ReviewForm productId={product.id} /> : <Gate state={eligibility} />}
+          <ReviewGate productId={product.id} />
         </div>
 
         <ul className="space-y-6">

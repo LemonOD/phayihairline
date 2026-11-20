@@ -1,12 +1,8 @@
-import { createClient } from "@/lib/supabase/server"
-import { getSession } from "@/lib/data/session"
+import { createClient, createPublicClient } from "@/lib/supabase/server"
 import type { Review } from "@/types"
 
-const BUYER_STATUSES = ["confirmed", "shipped", "delivered"]
-
 export async function getReviews(productId: string): Promise<Review[]> {
-  const supabase = await createClient()
-  const { data } = await supabase
+  const { data } = await createPublicClient()
     .from("reviews")
     .select("*")
     .eq("product_id", productId)
@@ -14,23 +10,6 @@ export async function getReviews(productId: string): Promise<Review[]> {
     .order("created_at", { ascending: false })
     .limit(30)
   return (data as Review[]) ?? []
-}
-
-export type Eligibility = "ok" | "login" | "not-purchased" | "reviewed"
-
-/** UX hint only: submit_review() re-checks everything inside Postgres. */
-export async function getEligibility(productId: string): Promise<Eligibility> {
-  const { user } = await getSession()
-  if (!user) return "login"
-
-  const supabase = await createClient()
-  const [mine, orders] = await Promise.all([
-    supabase.from("reviews").select("id").eq("product_id", productId).eq("user_id", user.id).maybeSingle(),
-    supabase.from("orders").select("id").in("status", BUYER_STATUSES)
-      .contains("items", [{ product_id: productId }]).limit(1),
-  ])
-  if (mine.data) return "reviewed"
-  return orders.data?.length ? "ok" : "not-purchased"
 }
 
 export function summarize(reviews: Review[]) {

@@ -26,7 +26,7 @@ export default function AboutPage() {
         <div className="mt-14 grid gap-8 md:grid-cols-3">
           {values.map(({ icon: Icon, title, text }, i) => (
             <Reveal key={title} delay={i * 0.1} className="text-center">
-              <span className="mx-auto mb-3 flex size-12 items-center justify-center rounded-full bg-accent/20 text-accent"><Icon className="size-5" /></span>
+              <span className="mx-auto mb-3 flex size-12 items-center justify-center rounded-full bg-accent/20 text-accent-text"><Icon className="size-5" /></span>
               <h3 className="font-sans font-semibold">{title}</h3>
               <p className="mt-1 text-sm text-muted-foreground">{text}</p>
             </Reveal>

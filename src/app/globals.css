@@ -14,6 +14,7 @@
   --color-muted-foreground: var(--muted-foreground);
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
+  --color-accent-text: var(--accent-text);
   --color-destructive: var(--destructive);
   --color-border: var(--border);
   --color-ring: var(--ring);
@@ -36,6 +37,8 @@
   --muted-foreground: oklch(0.5 0.02 50);
   --accent: oklch(0.72 0.1 75);
   --accent-foreground: oklch(0.2 0.03 60);
+  /* Darker gold for text on light backgrounds (WCAG AA 4.5:1); the bright accent stays for fills. */
+  --accent-text: oklch(0.46 0.1 70);
   --destructive: oklch(0.58 0.2 25);
   --border: oklch(0.9 0.012 75);
   --ring: oklch(0.72 0.1 75);
@@ -53,6 +56,7 @@
   --muted-foreground: oklch(0.7 0.015 70);
   --accent: oklch(0.78 0.11 78);
   --accent-foreground: oklch(0.18 0.02 50);
+  --accent-text: oklch(0.78 0.11 78);
   --destructive: oklch(0.65 0.19 25);
   --border: oklch(0.3 0.014 40);
   --ring: oklch(0.78 0.11 78);
@@ -66,6 +70,13 @@
   :focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
 }
 
+/* Entrance animations that run without JS. `rise-lift` only moves (never hides) so the LCP text paints at once. */
+@keyframes rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+@keyframes lift { from { transform: translateY(18px); } to { transform: none; } }
+.rise { animation: rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.rise-lift { animation: lift 0.7s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
+  .rise, .rise-lift { animation: none; }
 }

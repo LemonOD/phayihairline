@@ -20,7 +20,7 @@ export function ForgotPasswordForm() {
   if (isSubmitSuccessful && !error && !pending) {
     return (
       <div className="space-y-3 py-4 text-center">
-        <MailCheck className="mx-auto size-12 text-accent" />
+        <MailCheck className="mx-auto size-12 text-accent-text" />
         <p className="text-sm text-muted-foreground">If an account exists for that email, a reset link is on its way.</p>
       </div>
     )

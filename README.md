@@ -42,6 +42,26 @@ supabase/          schema, RLS policies, seed data
 - Catalog filters/sort/search live in the URL and are rendered on the server.
 - Every file is under 250 lines (enforced by ESLint `max-lines`).
 
+## Testing
+
+| Command | What it covers |
+| --- | --- |
+| `npm test` | Vitest unit tests: Zod schemas, slot logic, cart store, WhatsApp message, utils |
+| `npm run e2e` | Playwright (desktop + mobile): browse → variant → cart → checkout, keyboard-only walkthrough, axe accessibility scans, robots/sitemap |
+| `E2E_ALLOW_ORDERS=1 npm run e2e` | Also places a **real** order. Point it at a staging Supabase project only |
+| `npm run check` | lint + typecheck + unit tests + build (what CI runs) |
+
+First run: `npx playwright install chromium`. E2E reads your catalog from Supabase (read-only by default).
+CI (`.github/workflows/ci.yml`) always runs lint, types, unit tests and build; set the repo variable
+`E2E_ENABLED=true` (plus the Supabase secrets) to run the browser tests too.
+
+## Before you launch
+
+- Confirm opening hours in `siteConfig.hours` (`src/lib/utils.ts`). They feed the contact page, booking slots and Google structured data.
+- Set `NEXT_PUBLIC_SITE_URL` to your real domain (sitemap, canonical URLs, social previews).
+- Claim your Google Business Profile and keep name, address and phone identical to the site.
+- Analytics: `@vercel/analytics` renders only when hosted on Vercel; custom funnel events need a plan that supports them.
+
 ## Scripts
 
-`npm run dev` · `npm run build` · `npm run lint` · `npm run typecheck`
+`npm run dev` · `npm run build` · `npm run lint` · `npm run typecheck` · `npm test` · `npm run e2e`

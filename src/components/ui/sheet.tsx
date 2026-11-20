@@ -1,6 +1,7 @@
 "use client"
 
 import * as Dialog from "@radix-ui/react-dialog"
+import { useLayoutEffect, useRef } from "react"
 import { AnimatePresence, motion } from "framer-motion"
 import { X } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -18,6 +19,11 @@ type SheetProps = {
 /** Radix dialog (a11y, focus trap) animated with Framer Motion. */
 export function Sheet({ open, onOpenChange, title, description, side = "right", className, children }: SheetProps) {
   const x = side === "right" ? "100%" : "-100%"
+  // Drawers open from state (not a Dialog.Trigger), so remember the opener and give focus back on close.
+  const opener = useRef<HTMLElement | null>(null)
+  useLayoutEffect(() => {
+    if (open) opener.current = document.activeElement as HTMLElement | null
+  }, [open])
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <AnimatePresence>
@@ -29,7 +35,10 @@ export function Sheet({ open, onOpenChange, title, description, side = "right", 
                 initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               />
             </Dialog.Overlay>
-            <Dialog.Content asChild>
+            <Dialog.Content asChild onCloseAutoFocus={(e) => {
+              e.preventDefault()
+              opener.current?.focus()
+            }}>
               <motion.aside
                 className={cn(
                   "fixed inset-y-0 z-50 flex w-full max-w-md flex-col bg-background shadow-2xl",

@@ -11,6 +11,8 @@ import { Field } from "@/components/ui/field"
 import { Input, Select, Textarea } from "@/components/ui/input"
 import { createBooking } from "@/lib/actions/bookings"
 import { getAvailableSlots, type Slot } from "@/lib/actions/slots"
+import { track } from "@/lib/analytics"
+import { usePrefill } from "@/hooks/use-prefill"
 import { formatNaira, cn } from "@/lib/utils"
 import type { Service } from "@/types"
 
@@ -26,9 +28,9 @@ type Values = z.infer<typeof schema>
 const todayLagos = () => new Intl.DateTimeFormat("en-CA", { timeZone: "Africa/Lagos" }).format(new Date())
 const timeFmt = new Intl.DateTimeFormat("en-NG", { hour: "numeric", minute: "2-digit", timeZone: "Africa/Lagos" })
 
-type Props = { services: Service[]; initialSlug?: string; defaults: { name: string; phone: string; email: string } }
+type Props = { services: Service[]; initialSlug?: string }
 
-export function BookingForm({ services, initialSlug, defaults }: Props) {
+export function BookingForm({ services, initialSlug }: Props) {
   const [date, setDate] = useState(todayLagos())
   const [loaded, setLoaded] = useState<{ key: string; slots: Slot[] } | null>(null)
   const [slot, setSlot] = useState<string | null>(null)
@@ -37,9 +39,14 @@ export function BookingForm({ services, initialSlug, defaults }: Props) {
   const [pending, start] = useTransition()
 
   const initial = services.find((s) => s.slug === initialSlug)?.id ?? ""
-  const { register, handleSubmit, control, formState: { errors } } = useForm<Values>({
+  const { register, handleSubmit, control, getValues, setValue, formState: { errors } } = useForm<Values>({
     resolver: zodResolver(schema),
-    defaultValues: { serviceId: initial, ...defaults, notes: "" },
+    defaultValues: { serviceId: initial, name: "", phone: "", email: "", notes: "" },
+  })
+  usePrefill((p) => {
+    if (!getValues("name")) setValue("name", p.name)
+    if (!getValues("phone")) setValue("phone", p.phone)
+    if (!getValues("email")) setValue("email", p.email)
   })
 
   const serviceId = useWatch({ control, name: "serviceId" })
@@ -62,7 +69,10 @@ export function BookingForm({ services, initialSlug, defaults }: Props) {
     setError(null)
     start(async () => {
       const res = await createBooking({ ...v, startsAt: slot })
-      if (res.ok) return setDone(true)
+      if (res.ok) {
+        track("booking_created", { service: service?.name ?? "unknown" })
+        return setDone(true)
+      }
       setError(res.error)
       if (service) getAvailableSlots(date, service.duration_minutes).then((r) => setLoaded({ key, slots: r }))
     })

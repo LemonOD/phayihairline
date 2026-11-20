@@ -26,7 +26,7 @@ export default async function AccountPage() {
         <p className="mt-1 text-muted-foreground">{user.email}</p>
 
         <section className="mt-10">
-          <h2 className="mb-4 flex items-center gap-2 text-2xl font-semibold"><Package className="size-5 text-accent" /> Orders</h2>
+          <h2 className="mb-4 flex items-center gap-2 text-2xl font-semibold"><Package className="size-5 text-accent-text" /> Orders</h2>
           {orders.length === 0 ? <Card className="p-6 text-muted-foreground">No orders yet.</Card> : (
             <ul className="space-y-3">
               {orders.map((o) => (
@@ -45,7 +45,7 @@ export default async function AccountPage() {
         </section>
 
         <section className="mt-10">
-          <h2 className="mb-4 flex items-center gap-2 text-2xl font-semibold"><Calendar className="size-5 text-accent" /> Bookings</h2>
+          <h2 className="mb-4 flex items-center gap-2 text-2xl font-semibold"><Calendar className="size-5 text-accent-text" /> Bookings</h2>
           {bookings.length === 0 ? <Card className="p-6 text-muted-foreground">No bookings yet.</Card> : (
             <ul className="space-y-3">
               {bookings.map((b) => (

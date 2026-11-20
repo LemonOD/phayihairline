@@ -8,6 +8,7 @@ import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Input, Textarea } from "@/components/ui/input"
 import { submitReview } from "@/lib/actions/reviews"
+import { track } from "@/lib/analytics"
 import { cn } from "@/lib/utils"
 
 export function ReviewForm({ productId }: { productId: string }) {
@@ -28,6 +29,7 @@ export function ReviewForm({ productId }: { productId: string }) {
         setError(res.error)
         return
       }
+      track("review_submitted", { rating })
       toast.success("Thanks for your review!")
       router.refresh()
     })
@@ -41,7 +43,7 @@ export function ReviewForm({ productId }: { productId: string }) {
           <motion.button key={n} type="button" role="radio" aria-checked={rating === n} aria-label={`${n} star${n > 1 ? "s" : ""}`}
             whileTap={{ scale: 0.85 }} whileHover={{ scale: 1.15 }}
             onMouseEnter={() => setHover(n)} onClick={() => setRating(n)}>
-            <Star className={cn("size-7 transition-colors", n <= (hover || rating) ? "fill-accent text-accent" : "text-muted-foreground/40")} />
+            <Star className={cn("size-7 transition-colors", n <= (hover || rating) ? "fill-accent text-accent-text" : "text-muted-foreground/40")} />
           </motion.button>
         ))}
       </div>
