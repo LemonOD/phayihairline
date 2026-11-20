@@ -4,8 +4,8 @@ import { Container, SectionHeading } from "@/components/ui/section"
 import { getServices } from "@/lib/data/services"
 
 export const metadata: Metadata = {
-  title: "Book a wig installation in Ikorodu",
-  description: "Book your wig installation, styling or customization appointment at our Adamo, Ikorodu studio.",
+  title: "Book a wig installation in Lagos",
+  description: "Book your wig installation, styling or customization appointment with our stylists in Lagos.",
   alternates: { canonical: "/book" },
 }
 export const revalidate = 60

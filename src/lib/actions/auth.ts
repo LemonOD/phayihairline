@@ -3,6 +3,7 @@
 import { headers } from "next/headers"
 import { redirect } from "next/navigation"
 import { createClient } from "@/lib/supabase/server"
+import { emailWelcome } from "@/lib/notify"
 import { emailSchema, loginSchema, passwordSchema, registerSchema } from "@/lib/validation/schemas"
 import { fail, validationError } from "./helpers"
 import type { ActionResult } from "@/types"
@@ -39,7 +40,10 @@ export async function signUp(input: unknown): Promise<ActionResult<{ needsConfir
     },
   })
   if (error) return fail(error.message)
-  if (data.session) redirect("/account")
+  if (data.session) {
+    await emailWelcome({ email, name: fullName })
+    redirect("/account")
+  }
   return { ok: true, data: { needsConfirmation: true } }
 }
 

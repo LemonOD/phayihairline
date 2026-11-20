@@ -8,7 +8,7 @@ import { Container, SectionHeading } from "@/components/ui/section"
 export const metadata: Metadata = { title: "About us" }
 
 const values = [
-  { icon: Gem, title: "Quality first", text: "Every wig, frontal and tool is hand-picked and checked before it reaches you." },
+  { icon: Gem, title: "Quality first", text: "Every unit, bundle and closure is hand-picked and checked before it reaches you." },
   { icon: Sparkles, title: "Natural finish", text: "Our work is judged by how undetectable it looks, so we obsess over the hairline." },
   { icon: HeartHandshake, title: "Personal service", text: "From first consultation to aftercare, you deal with real people who know your name." },
 ]
@@ -18,10 +18,10 @@ export default function AboutPage() {
     <PageTransition>
       <Container className="max-w-4xl py-12">
         <SectionHeading eyebrow="Our story" title="Beauty that starts at the hairline"
-          description="PhayiHairline is a Lagos studio and store for premium wigs, frontals and installation." />
+          description="Phayihairline is a Lagos luxury hair brand: premium hair at an affordable price." />
         <Reveal className="space-y-4 text-center text-lg leading-relaxed text-muted-foreground">
-          <p>We started with a simple belief: a great wig should be indistinguishable from your own hair. That means better materials, better installs and honest advice.</p>
-          <p>Today we serve customers across Nigeria with a curated range of human hair wigs, lace frontals and the professional tools to maintain them, plus a studio in Adamo, Ikorodu for installations.</p>
+          <p>Phayihairline sells luxury hair extensions and wigs, with one promise: premium hair, affordable luxury. Our hair is soft, long-lasting and natural-looking, and we slay and save so you can too.</p>
+          <p>We offer virgin and raw donor hair, bundles, closures and frontals, custom wigs made to order, and revamping and rewigging of units you already own. We ship worldwide, including the US and UK.</p>
         </Reveal>
         <div className="mt-14 grid gap-8 md:grid-cols-3">
           {values.map(({ icon: Icon, title, text }, i) => (

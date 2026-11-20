@@ -10,8 +10,8 @@ import { getServices } from "@/lib/data/services"
 import { formatNaira, siteConfig } from "@/lib/utils"
 
 export const metadata: Metadata = {
-  title: "Wig Installation in Ikorodu, Lagos",
-  description: "Professional wig installation, customization, styling and maintenance in Ikorodu, Lagos.",
+  title: "Wig Installation in Lagos",
+  description: "Professional wig installation, customization, styling and maintenance in Lagos.",
 }
 export const revalidate = 60
 
@@ -47,7 +47,7 @@ export default async function ServicesPage() {
       }} />
       <Container className="py-12">
         <SectionHeading eyebrow="Studio services" title="Professional wig services"
-          description="Book a slot with our stylists in Adamo, Ikorodu and walk out feeling like yourself, only better." />
+          description="Book a slot with our stylists in Lagos and walk out feeling like yourself, only better." />
 
         <Stagger className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {services.map((s) => (

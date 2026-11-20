@@ -11,7 +11,7 @@ import { whatsappLink } from "@/lib/whatsapp"
 
 export const metadata: Metadata = {
   title: "Contact us",
-  description: "Visit our studio in Adamo, Ikorodu, Lagos, call, or message us on WhatsApp.",
+  description: "Reach Phayihairline in Lagos by phone, email or WhatsApp.",
 }
 
 const info = [

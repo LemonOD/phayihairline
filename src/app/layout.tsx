@@ -12,10 +12,10 @@ const playfair = Playfair_Display({ subsets: ["latin"], variable: "--font-playfa
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
-  title: { default: "Wigs, Frontals & Wig Installation in Ikorodu, Lagos · PhayiHairline", template: "%s · PhayiHairline" },
+  title: { default: "Luxury Wigs, Bundles & Frontals in Lagos · PhayiHairline", template: "%s · PhayiHairline" },
   alternates: { canonical: "./" },
   description:
-    "Shop premium human hair wigs, lace frontals and wigging tools. Professional wig installation in Adamo, Ikorodu, Lagos.",
+    "Shop luxury wigs, bundles, closures and frontals in Lagos. Premium hair, affordable luxury, with custom units and revamping.",
   openGraph: { siteName: siteConfig.name, type: "website", locale: "en_NG" },
   twitter: { card: "summary_large_image" },
 }

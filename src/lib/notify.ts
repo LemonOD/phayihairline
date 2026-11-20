@@ -9,14 +9,16 @@ import { formatNaira, siteConfig } from "@/lib/utils"
 const escapeHtml = (s: string) =>
   s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;")
 
-type Mail = { to: string | string[]; subject: string; lines: string[] }
+type Mail = { to: string | string[]; subject: string; lines: string[]; cta?: { label: string; url: string } }
 
-async function send({ to, subject, lines }: Mail) {
+async function send({ to, subject, lines, cta }: Mail) {
   const key = process.env.RESEND_API_KEY
   if (!key) return
   const html = `<div style="font-family:system-ui,sans-serif;line-height:1.6;max-width:520px">${lines
     .map((l) => `<p style="margin:0 0 8px">${escapeHtml(l)}</p>`)
-    .join("")}</div>`
+    .join("")}${
+    cta ? `<p style="margin:20px 0"><a href="${escapeHtml(cta.url)}" style="background:#2b1d1a;color:#fff;padding:12px 22px;border-radius:8px;text-decoration:none;font-weight:600">${escapeHtml(cta.label)}</a></p>` : ""
+  }</div>`
   try {
     const res = await fetch("https://api.resend.com/emails", {
       method: "POST",
@@ -60,7 +62,7 @@ export const notifyNewMessage = (m: { name: string; email: string; message: stri
 export const emailBookingStatus = (b: { email: string; name: string; service: string; when: string; status: "pending" | "confirmed" | "cancelled" }) => {
   const copy: Record<typeof b.status, [string, string]> = {
     pending: ["We got your booking", `Thanks ${b.name}! We've received your request for ${b.service} on ${b.when} and will confirm shortly.`],
-    confirmed: ["Your booking is confirmed", `Hi ${b.name}, your ${b.service} appointment on ${b.when} is confirmed. See you at ${siteConfig.address}.`],
+    confirmed: ["Your booking is confirmed", `Hi ${b.name}, your ${b.service} appointment on ${b.when} is confirmed. We'll be in touch on WhatsApp with the details.`],
     cancelled: ["Your booking was cancelled", `Hi ${b.name}, your ${b.service} appointment on ${b.when} has been cancelled. Contact us on ${siteConfig.phone} to rebook.`],
   }
   const [title, body] = copy[b.status]
@@ -73,3 +75,17 @@ export const notifyNewReview = (r: { product: string; rating: number; body: stri
     subject: `New ${r.rating}★ review for ${r.product}`,
     lines: [r.body, `Moderate: ${siteConfig.url}/admin/reviews`],
   }) : Promise.resolve()
+
+/** Sent once, right after a customer confirms their email (or signs up with confirmation switched off). */
+export const emailWelcome = (u: { email: string; name?: string | null }) =>
+  send({
+    to: u.email,
+    subject: `Welcome to ${siteConfig.name} 🖤`,
+    lines: [
+      `Hi ${u.name?.trim() || "there"}, welcome to ${siteConfig.name}! ${siteConfig.tagline}`,
+      "Here is what your account gives you: faster checkout with saved details, order tracking, a wishlist, and the chance to review pieces you have bought.",
+      "We offer luxury wigs, bundles, closures and frontals, custom units made to order, and revamping. We ship worldwide, including the US and UK.",
+      `Questions about an order or a custom unit? WhatsApp us on ${siteConfig.phone}, or reply to this email.`,
+    ],
+    cta: { label: "Start shopping", url: `${siteConfig.url}/products/wigs` },
+  })

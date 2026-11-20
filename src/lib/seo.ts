@@ -14,10 +14,9 @@ export function localBusinessJsonLd() {
     email: siteConfig.email,
     priceRange: "₦₦",
     description:
-      "Premium human hair wigs, lace frontals and wigging tools, with professional wig installation in Ikorodu, Lagos.",
+      "Premium human hair wigs, lace frontals and wigging tools, with wig installation in Ikorodu, Lagos, and worldwide shipping.",
     address: {
       "@type": "PostalAddress",
-      streetAddress: "Adamo",
       addressLocality: "Ikorodu",
       addressRegion: "Lagos State",
       addressCountry: "NG",
