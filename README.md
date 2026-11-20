@@ -1,32 +1,47 @@
-# PhayiHairline Website
+# PhayiHairline
 
-A modern e-commerce website for PhayiHairline, a premium wig and hair products store.
+Storefront for a Lagos wig studio: wigs, frontals and tools, plus bookable installation services.
+Checkout creates an order in Supabase, then hands the customer to WhatsApp to confirm payment and delivery.
 
-## Features
+**Stack:** Next.js 15 (App Router, Server Actions) · React 19 · TypeScript · Tailwind CSS 4 ·
+Supabase (Auth, Postgres + RLS, Storage) · Framer Motion · Zustand · React Hook Form + Zod
 
-- Responsive design for all device sizes
-- Product catalog with filtering and sorting
-- Shopping cart functionality
-- Wishlist functionality
-- Dark mode support
-- Product details pages
-- Services section
-- About and Contact pages
+## Setup
 
-## Tech Stack
+1. Create a Supabase project, then run the files in `supabase/migrations/` in order (0001 → 0004), then
+   `supabase/seed.sql` and optionally `supabase/seed_variants.sql`, in the SQL editor (or `supabase db push`).
+2. `cp .env.example .env.local` and fill in the project URL and the **publishable** key (`sb_publishable_…`).
+   Never put a secret/service-role key in a `NEXT_PUBLIC_` variable.
+   Optional: set `RESEND_API_KEY` + `ADMIN_NOTIFY_EMAIL` for email alerts on new orders, bookings and messages.
+3. In Supabase → Authentication → URL Configuration, add `http://localhost:3000/auth/callback`
+   (and your production URL) as a redirect URL.
+4. `npm install && npm run dev`
+5. Sign up on the site, then promote yourself to admin:
+   ```sql
+   update public.profiles set role = 'admin'
+   where id = (select id from auth.users where email = 'you@example.com');
+   ```
 
-- Next.js 14
-- TypeScript
-- Tailwind CSS
-- shadcn/ui components
-- Lucide React icons
-- next-themes for dark mode
-- Firebase (Authentication, Firestore, Storage)
+## Structure
 
-## Getting Started
+```
+src/app            routes (shop, services, book, checkout, account, admin, auth)
+src/components     ui/ primitives · layout/ · shop/ · home/ · booking/ · auth/ · admin/
+src/lib/actions    server actions (auth, orders, bookings, contact, admin)
+src/lib/data       server-side reads (catalog, services, session, slots, admin)
+src/lib/supabase   browser / server / middleware clients
+src/stores         cart + wishlist (Zustand, persisted)
+supabase/          schema, RLS policies, seed data
+```
 
-1. Clone the repository:
-```bash
-git clone https://github.com/LemonOD/phayi-hairline.git
-cd phayi-hairline
+## Design notes
 
+- **Security lives in the database.** Admin is a `profiles.role`, enforced by RLS and re-checked in
+  every admin server action. Order totals are recomputed inside `place_order()`, so clients can't set prices.
+  Double bookings are prevented by a partial unique index on `bookings.starts_at`.
+- Catalog filters/sort/search live in the URL and are rendered on the server.
+- Every file is under 250 lines (enforced by ESLint `max-lines`).
+
+## Scripts
+
+`npm run dev` · `npm run build` · `npm run lint` · `npm run typecheck`
