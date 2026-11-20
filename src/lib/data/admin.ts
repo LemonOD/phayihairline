@@ -1,0 +1,77 @@
+import { createClient } from "@/lib/supabase/server"
+import type { Booking, Order, Product, Service } from "@/types"
+
+export async function getAdminProducts(): Promise<Product[]> {
+  const supabase = await createClient()
+  const { data } = await supabase.from("products").select("*").order("created_at", { ascending: false })
+  return (data as Product[]) ?? []
+}
+
+export async function getAdminProduct(id: string): Promise<Product | null> {
+  const supabase = await createClient()
+  const { data } = await supabase
+    .from("products")
+    .select("*, variants:product_variants(*)")
+    .eq("id", id)
+    .order("sort_order", { referencedTable: "product_variants" })
+    .maybeSingle()
+  return (data as Product | null) ?? null
+}
+
+export async function getAdminServices(): Promise<Service[]> {
+  const supabase = await createClient()
+  const { data } = await supabase.from("services").select("*").order("sort_order")
+  return (data as Service[]) ?? []
+}
+
+export async function getAdminService(id: string): Promise<Service | null> {
+  const supabase = await createClient()
+  const { data } = await supabase.from("services").select("*").eq("id", id).maybeSingle()
+  return (data as Service | null) ?? null
+}
+
+export async function getAdminOrders(): Promise<Order[]> {
+  const supabase = await createClient()
+  const { data } = await supabase.from("orders").select("*").order("created_at", { ascending: false }).limit(100)
+  return (data as Order[]) ?? []
+}
+
+export async function getAdminBookings(): Promise<Booking[]> {
+  const supabase = await createClient()
+  const { data } = await supabase
+    .from("bookings")
+    .select("*, service:services(name, duration_minutes, price)")
+    .order("starts_at", { ascending: true })
+    .limit(100)
+  return (data as Booking[]) ?? []
+}
+
+export async function getDashboardStats() {
+  const supabase = await createClient()
+  const count = (table: string, filter?: [string, string]) => {
+    const q = supabase.from(table).select("*", { count: "exact", head: true })
+    return (filter ? q.eq(filter[0], filter[1]) : q).then((r) => r.count ?? 0)
+  }
+  const [products, pendingOrders, pendingBookings, messages] = await Promise.all([
+    count("products"),
+    count("orders", ["status", "pending"]),
+    count("bookings", ["status", "pending"]),
+    count("contact_messages"),
+  ])
+  return { products, pendingOrders, pendingBookings, messages }
+}
+
+export type ContactMessage = {
+  id: string
+  name: string
+  email: string
+  phone: string | null
+  message: string
+  created_at: string
+}
+
+export async function getAdminMessages(): Promise<ContactMessage[]> {
+  const supabase = await createClient()
+  const { data } = await supabase.from("contact_messages").select("*").order("created_at", { ascending: false }).limit(100)
+  return (data as ContactMessage[]) ?? []
+}

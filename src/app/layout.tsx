@@ -1,52 +1,47 @@
-import type React from "react"
-import type { Metadata } from "next"
-import { Inter } from "next/font/google"
+import type { Metadata, Viewport } from "next"
+import { Inter, Playfair_Display } from "next/font/google"
+import { Analytics } from "@vercel/analytics/next"
 import "./globals.css"
+import { Providers } from "@/components/layout/providers"
+import { SiteHeader } from "@/components/layout/site-header"
+import { SiteFooter } from "@/components/layout/site-footer"
+import { siteConfig } from "@/lib/utils"
 
-import { ThemeProvider } from "@/src/components/theme-provider"
-import { CartProvider } from "@/src/lib/context/cart-context"
-import { WishlistProvider } from "@/src/lib/context/wishlist-context"
-import { FilterProvider } from "@/src/lib/context/filter-context"
-import { Toaster } from "@/src/components/ui/toaster"
-import SiteHeader from "@/src/components/site-header"
-import SiteFooter from "@/src/components/site-footer"
-
-const inter = Inter({ subsets: ["latin"] })
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" })
+const playfair = Playfair_Display({ subsets: ["latin"], variable: "--font-playfair" })
 
 export const metadata: Metadata = {
-  title: "PhayiHairline - Premium Wigs, Frontals & Wigging Tools",
+  metadataBase: new URL(siteConfig.url),
+  title: { default: "Luxury Wigs, Bundles & Frontals in Lagos · PhayiHairline", template: "%s · PhayiHairline" },
+  alternates: { canonical: "./" },
   description:
-    "Shop high-quality wigs, frontals, and wigging tools. Professional wig installation services available in Adamo, Ikorodu, Lagos State.",
-    generator: 'v0.dev'
+    "Shop luxury wigs, bundles, closures and frontals in Lagos. Premium hair, affordable luxury, with custom units and revamping.",
+  openGraph: { siteName: siteConfig.name, type: "website", locale: "en_NG" },
+  twitter: { card: "summary_large_image" },
 }
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode
-}>) {
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#faf7f2" },
+    { media: "(prefers-color-scheme: dark)", color: "#1c1917" },
+  ],
+}
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={inter.className}>
-        <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
-          <CartProvider>
-            <WishlistProvider>
-              <FilterProvider>
-                <div className="relative flex min-h-screen flex-col">
-                  <SiteHeader />
-                  <main className="flex-1">{children}</main>
-                  <SiteFooter />
-                  <Toaster />
-                </div>
-              </FilterProvider>
-            </WishlistProvider>
-          </CartProvider>
-        </ThemeProvider>
+    <html lang="en-NG" suppressHydrationWarning className={`${inter.variable} ${playfair.variable}`}>
+      <body className="min-h-screen antialiased">
+        <a href="#main"
+          className="sr-only z-[60] rounded-md bg-primary px-4 py-2 text-primary-foreground focus:not-sr-only focus:fixed focus:left-4 focus:top-4">
+          Skip to content
+        </a>
+        <Providers>
+          <SiteHeader />
+          <main id="main" tabIndex={-1} className="min-h-[70vh] outline-none">{children}</main>
+          <SiteFooter />
+        </Providers>
+        {process.env.VERCEL && <Analytics />}
       </body>
     </html>
   )
 }
-
-
-
-import './globals.css'
