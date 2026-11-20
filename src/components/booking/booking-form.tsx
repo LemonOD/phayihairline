@@ -58,9 +58,15 @@ export function BookingForm({ services, initialSlug }: Props) {
   useEffect(() => {
     if (!service) return
     let cancelled = false
-    getAvailableSlots(date, service.duration_minutes).then((r) => {
-      if (!cancelled) setLoaded({ key: `${date}|${service.id}`, slots: r })
-    })
+    getAvailableSlots(date, service.duration_minutes)
+      .then((r) => {
+        if (!cancelled) setLoaded({ key: `${date}|${service.id}`, slots: r })
+      })
+      .catch(() => {
+        if (cancelled) return
+        setLoaded({ key: `${date}|${service.id}`, slots: [] })
+        setError("We couldn't load available times. Please try again.")
+      })
     return () => { cancelled = true }
   }, [date, service])
 
@@ -74,7 +80,7 @@ export function BookingForm({ services, initialSlug }: Props) {
         return setDone(true)
       }
       setError(res.error)
-      if (service) getAvailableSlots(date, service.duration_minutes).then((r) => setLoaded({ key, slots: r }))
+      if (service) getAvailableSlots(date, service.duration_minutes).then((r) => setLoaded({ key, slots: r })).catch(() => {})
     })
   }
 

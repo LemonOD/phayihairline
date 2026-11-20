@@ -58,7 +58,7 @@ CI (`.github/workflows/ci.yml`) always runs lint, types, unit tests and build; s
 ## Before you launch
 
 - Confirm opening hours in `siteConfig.hours` (`src/lib/utils.ts`). They feed the contact page, booking slots and Google structured data.
-- Set `NEXT_PUBLIC_SITE_URL` to your real domain (sitemap, canonical URLs, social previews).
+- Production domain is `https://phayihairline.org`: set `NEXT_PUBLIC_SITE_URL` to it in Vercel, add it plus `https://phayihairline.org/auth/callback` in Supabase → Authentication → URL Configuration, and verify the domain in Resend so `NOTIFY_FROM` can use it.
 - Claim your Google Business Profile and keep name, address and phone identical to the site.
 - Analytics: `@vercel/analytics` renders only when hosted on Vercel; custom funnel events need a plan that supports them.
 

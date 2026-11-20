@@ -72,6 +72,7 @@ export type Booking = {
   customer_phone: string
   customer_email: string | null
   starts_at: string
+  ends_at: string
   notes: string | null
   status: BookingStatus
   created_at: string

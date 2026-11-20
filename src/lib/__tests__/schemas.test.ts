@@ -90,3 +90,15 @@ describe("productSchema variants", () => {
     expect(r.price).toBe(2500)
   })
 })
+
+describe("productSchema images", () => {
+  const base = { name: "Wig", price: 1000, category: "wigs", stock: 1 }
+  const ok = (images: string[]) => productSchema.safeParse({ ...base, images }).success
+
+  it("accepts Supabase Storage URLs and bundled site-relative photos", () => {
+    expect(ok(["https://abc.supabase.co/storage/v1/object/public/product-images/a.jpg", "/brand/product-curly-revamp.jpg"])).toBe(true)
+  })
+  it.each(["javascript:alert(1)", "//evil.example/x.jpg", "http://insecure.example/x.jpg", "x.jpg"])("rejects %s", (img) => {
+    expect(ok([img])).toBe(false)
+  })
+})

@@ -63,6 +63,12 @@ export const variantSchema = z.object({
   stock: z.coerce.number().int().min(0),
 })
 
+/** Uploaded images are absolute https URLs (Supabase Storage); bundled brand photos are site-relative paths. */
+export const imageRefSchema = z.string().refine(
+  (s) => (s.startsWith("/") && !s.startsWith("//")) || s.startsWith("https://"),
+  "Invalid image path",
+)
+
 export const productSchema = z.object({
   name: z.string().trim().min(2),
   description: z.string().trim().default(""),
@@ -72,7 +78,7 @@ export const productSchema = z.object({
   stock: z.coerce.number().int().min(0),
   features: z.array(z.string()).default([]),
   tags: z.array(z.string()).default([]),
-  images: z.array(z.string().url()).default([]),
+  images: z.array(imageRefSchema).default([]),
   is_featured: z.boolean().default(false),
   is_active: z.boolean().default(true),
   option_names: z.array(z.string().trim().min(1)).max(3).default([]),

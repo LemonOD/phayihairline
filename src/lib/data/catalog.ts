@@ -1,4 +1,5 @@
 import { createPublicClient } from "@/lib/supabase/server"
+import { unwrap } from "./unwrap"
 import type { Category, Product } from "@/types"
 
 export type SortKey = "newest" | "price-asc" | "price-desc" | "rating"
@@ -13,8 +14,7 @@ export type ProductQuery = {
 }
 
 export async function getCategories(): Promise<Category[]> {
-  const { data } = await createPublicClient().from("categories").select("*").order("sort_order")
-  return (data as Category[]) ?? []
+  return unwrap(await createPublicClient().from("categories").select("*").order("sort_order"), [] as Category[])
 }
 
 export async function getProducts(query: ProductQuery = {}): Promise<Product[]> {
@@ -33,48 +33,52 @@ export async function getProducts(query: ProductQuery = {}): Promise<Product[]> 
   }
 
   if (query.limit) req = req.limit(query.limit)
-  const { data } = await req
-  return (data as Product[]) ?? []
+  return unwrap(await req, [] as Product[])
 }
 
 export async function getFeaturedProducts(limit = 8): Promise<Product[]> {
-  const { data } = await createPublicClient()
-    .from("products")
-    .select("*")
-    .eq("is_active", true)
-    .eq("is_featured", true)
-    .order("rating", { ascending: false })
-    .limit(limit)
-  return (data as Product[]) ?? []
+  return unwrap(
+    await createPublicClient()
+      .from("products")
+      .select("*")
+      .eq("is_active", true)
+      .eq("is_featured", true)
+      .order("rating", { ascending: false })
+      .limit(limit),
+    [] as Product[],
+  )
 }
 
 export async function getProductBySlug(slug: string): Promise<Product | null> {
-  const { data } = await createPublicClient()
-    .from("products")
-    .select("*, variants:product_variants(*)")
-    .eq("slug", slug)
-    .eq("is_active", true)
-    .order("sort_order", { referencedTable: "product_variants" })
-    .maybeSingle()
-  return (data as Product | null) ?? null
+  return unwrap(
+    await createPublicClient()
+      .from("products")
+      .select("*, variants:product_variants(*)")
+      .eq("slug", slug)
+      .eq("is_active", true)
+      .order("sort_order", { referencedTable: "product_variants" })
+      .maybeSingle(),
+    null as Product | null,
+  )
 }
 
 export async function getRelatedProducts(product: Product, limit = 4): Promise<Product[]> {
-  const { data } = await createPublicClient()
-    .from("products")
-    .select("*")
-    .eq("is_active", true)
-    .eq("category", product.category)
-    .neq("id", product.id)
-    .limit(limit)
-  return (data as Product[]) ?? []
+  return unwrap(
+    await createPublicClient()
+      .from("products")
+      .select("*")
+      .eq("is_active", true)
+      .eq("category", product.category)
+      .neq("id", product.id)
+      .limit(limit),
+    [] as Product[],
+  )
 }
 
 /** Lightweight list for sitemap and static generation. */
 export async function getProductSlugs(): Promise<{ category: string; slug: string; updated_at: string }[]> {
-  const { data } = await createPublicClient()
-    .from("products")
-    .select("category, slug, updated_at")
-    .eq("is_active", true)
-  return (data as { category: string; slug: string; updated_at: string }[]) ?? []
+  return unwrap(
+    await createPublicClient().from("products").select("category, slug, updated_at").eq("is_active", true),
+    [] as { category: string; slug: string; updated_at: string }[],
+  )
 }
