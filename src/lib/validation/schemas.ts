@@ -1,6 +1,6 @@
 import { z } from "zod"
 
-const phone = z
+export const phoneSchema = z
   .string()
   .trim()
   .regex(/^(\+?234|0)[789][01]\d{8}$/, "Enter a valid Nigerian phone number")
@@ -13,7 +13,7 @@ export const loginSchema = z.object({
 export const registerSchema = z.object({
   fullName: z.string().trim().min(2, "Enter your full name"),
   email: z.string().trim().email("Enter a valid email"),
-  phone: phone.optional().or(z.literal("")),
+  phone: phoneSchema.optional().or(z.literal("")),
   password: z.string().min(8, "Use at least 8 characters"),
 })
 
@@ -28,7 +28,7 @@ export const passwordSchema = z
 
 export const checkoutSchema = z.object({
   name: z.string().trim().min(2, "Enter your name"),
-  phone,
+  phone: phoneSchema,
   address: z.string().trim().min(8, "Enter your delivery address"),
   items: z
     .array(z.object({
@@ -39,19 +39,27 @@ export const checkoutSchema = z.object({
     .min(1, "Your cart is empty"),
 })
 
+/** The fields a customer types on the checkout page; the server adds the cart lines. */
+export const checkoutFormSchema = checkoutSchema.omit({ items: true })
+
 export const bookingSchema = z.object({
   serviceId: z.string().uuid(),
   startsAt: z.string().datetime(),
   name: z.string().trim().min(2, "Enter your name"),
-  phone,
+  phone: phoneSchema,
   email: z.string().trim().email().optional().or(z.literal("")),
   notes: z.string().trim().max(500).optional(),
 })
 
+/** The booking form picks the time separately, and its service is a select (empty until chosen), not a uuid yet. */
+export const bookingFormSchema = bookingSchema
+  .omit({ startsAt: true, serviceId: true })
+  .extend({ serviceId: z.string().min(1, "Choose a service") })
+
 export const contactSchema = z.object({
   name: z.string().trim().min(2, "Enter your name"),
   email: z.string().trim().email("Enter a valid email"),
-  phone: phone.optional().or(z.literal("")),
+  phone: phoneSchema.optional().or(z.literal("")),
   message: z.string().trim().min(10, "Tell us a little more").max(2000),
 })
 

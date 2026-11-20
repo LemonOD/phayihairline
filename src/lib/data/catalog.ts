@@ -14,7 +14,7 @@ export type ProductQuery = {
 }
 
 export async function getCategories(): Promise<Category[]> {
-  return unwrap(await createPublicClient().from("categories").select("*").order("sort_order"), [] as Category[])
+  return unwrap(await createPublicClient().from("categories").select("*").order("sort_order"), [])
 }
 
 export async function getProducts(query: ProductQuery = {}): Promise<Product[]> {
@@ -33,7 +33,7 @@ export async function getProducts(query: ProductQuery = {}): Promise<Product[]> 
   }
 
   if (query.limit) req = req.limit(query.limit)
-  return unwrap(await req, [] as Product[])
+  return unwrap(await req, [])
 }
 
 export async function getFeaturedProducts(limit = 8): Promise<Product[]> {
@@ -45,7 +45,7 @@ export async function getFeaturedProducts(limit = 8): Promise<Product[]> {
       .eq("is_featured", true)
       .order("rating", { ascending: false })
       .limit(limit),
-    [] as Product[],
+    [],
   )
 }
 
@@ -58,7 +58,7 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
       .eq("is_active", true)
       .order("sort_order", { referencedTable: "product_variants" })
       .maybeSingle(),
-    null as Product | null,
+    null,
   )
 }
 
@@ -71,7 +71,7 @@ export async function getRelatedProducts(product: Product, limit = 4): Promise<P
       .eq("category", product.category)
       .neq("id", product.id)
       .limit(limit),
-    [] as Product[],
+    [],
   )
 }
 
@@ -79,6 +79,6 @@ export async function getRelatedProducts(product: Product, limit = 4): Promise<P
 export async function getProductSlugs(): Promise<{ category: string; slug: string; updated_at: string }[]> {
   return unwrap(
     await createPublicClient().from("products").select("category, slug, updated_at").eq("is_active", true),
-    [] as { category: string; slug: string; updated_at: string }[],
+    [],
   )
 }

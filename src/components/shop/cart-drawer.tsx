@@ -6,57 +6,71 @@ import { Minus, Plus, ShoppingBag, Trash2 } from "lucide-react"
 import { Sheet } from "@/components/ui/sheet"
 import { Button } from "@/components/ui/button"
 import { ProductImage } from "@/components/ui/product-image"
-import { useCart, cartTotal } from "@/stores/cart"
+import { useCart, cartCount, cartTotal } from "@/stores/cart"
+import { useIsDesktop } from "@/hooks/use-media-query"
 import { formatNaira } from "@/lib/utils"
 
+const stepper = "flex size-11 items-center justify-center rounded-full border transition active:scale-90 hover:bg-muted disabled:pointer-events-none disabled:opacity-40 md:size-9"
+
 export function CartDrawer() {
-  const { lines, open, setOpen, setQuantity, remove } = useCart()
+  const lines = useCart((s) => s.lines)
+  const open = useCart((s) => s.open)
+  const setOpen = useCart((s) => s.setOpen)
+  const setQuantity = useCart((s) => s.setQuantity)
+  const remove = useCart((s) => s.remove)
+  const isDesktop = useIsDesktop()
+  const count = cartCount(lines)
   const total = cartTotal(lines)
 
   return (
-    <Sheet open={open} onOpenChange={setOpen} title="Your cart" description={`${lines.length} item(s)`}>
+    <Sheet open={open} onOpenChange={setOpen} side={isDesktop ? "right" : "bottom"} title="Your cart"
+      description={`${count} ${count === 1 ? "item" : "items"}`}>
       {lines.length === 0 ? (
-        <div className="flex flex-1 flex-col items-center justify-center gap-4 p-8 text-center">
-          <ShoppingBag className="size-12 text-muted-foreground/50" />
-          <p className="text-muted-foreground">Your cart is empty.</p>
-          <Button asChild onClick={() => setOpen(false)}><Link href="/products/wigs">Start shopping</Link></Button>
+        <div className="flex flex-1 flex-col items-center justify-center gap-4 px-8 py-14 text-center">
+          <span className="flex size-16 items-center justify-center rounded-full bg-accent/15 text-accent-text"><ShoppingBag className="size-7" /></span>
+          <div>
+            <p className="font-serif text-xl">Your cart is empty</p>
+            <p className="mt-1 text-sm text-muted-foreground">Find your next unit and it will wait for you here.</p>
+          </div>
+          <Button asChild size="lg" onClick={() => setOpen(false)}><Link href="/products/wigs">Start shopping</Link></Button>
         </div>
       ) : (
         <>
-          <ul className="flex-1 space-y-4 overflow-y-auto p-5">
+          <ul className="min-h-0 flex-1 divide-y overflow-y-auto overscroll-contain px-5">
             <AnimatePresence initial={false}>
               {lines.map((l) => (
-                <motion.li key={l.key} layout initial={{ opacity: 0, x: 24 }} animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -24, height: 0 }} className="flex gap-4">
-                  <div className="relative size-20 shrink-0 overflow-hidden rounded-md bg-muted">
-                    <ProductImage src={l.image} alt={l.name} sizes="80px" />
+                <motion.li key={l.key} layout="position" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, x: -32, transition: { duration: 0.18 } }} className="flex gap-4 py-4">
+                  <div className="relative size-24 shrink-0 overflow-hidden rounded-lg bg-muted">
+                    <ProductImage src={l.image} alt={l.name} sizes="96px" />
                   </div>
-                  <div className="min-w-0 flex-1">
+                  <div className="flex min-w-0 flex-1 flex-col">
                     <Link href={`/products/${l.category}/${l.slug}`} onClick={() => setOpen(false)}
-                      className="line-clamp-1 font-medium hover:underline">{l.name}</Link>
-                    {l.variantLabel && <p className="text-xs text-muted-foreground">{l.variantLabel}</p>}
-                    <p className="text-sm text-muted-foreground">{formatNaira(l.price)}</p>
-                    <div className="mt-2 flex items-center gap-2">
-                      <Button variant="outline" size="icon" className="size-7" aria-label="Decrease"
-                        onClick={() => setQuantity(l.key, l.quantity - 1)}><Minus /></Button>
-                      <span className="w-6 text-center text-sm tabular-nums">{l.quantity}</span>
-                      <Button variant="outline" size="icon" className="size-7" aria-label="Increase"
-                        disabled={l.quantity >= l.stock} onClick={() => setQuantity(l.key, l.quantity + 1)}><Plus /></Button>
-                      <Button variant="ghost" size="icon" className="ml-auto size-7" aria-label={`Remove ${l.name}`}
-                        onClick={() => remove(l.key)}><Trash2 /></Button>
+                      className="line-clamp-2 font-medium leading-snug hover:underline">{l.name}</Link>
+                    {l.variantLabel && <p className="mt-0.5 text-xs text-muted-foreground">{l.variantLabel}</p>}
+                    <p className="mt-1 text-sm font-semibold">{formatNaira(l.price)}</p>
+                    <div className="mt-auto flex items-center gap-2 pt-2">
+                      <button type="button" className={stepper} aria-label={`Decrease quantity of ${l.name}`}
+                        onClick={() => setQuantity(l.key, l.quantity - 1)}><Minus className="size-4" /></button>
+                      <span className="w-6 text-center text-sm font-medium tabular-nums" aria-live="polite">{l.quantity}</span>
+                      <button type="button" className={stepper} aria-label={`Increase quantity of ${l.name}`}
+                        disabled={l.quantity >= l.stock} onClick={() => setQuantity(l.key, l.quantity + 1)}><Plus className="size-4" /></button>
+                      <button type="button" className="ml-auto flex size-11 items-center justify-center rounded-full text-muted-foreground transition active:scale-90 hover:bg-muted hover:text-destructive md:size-9"
+                        aria-label={`Remove ${l.name}`} onClick={() => remove(l.key)}><Trash2 className="size-4" /></button>
                     </div>
                   </div>
                 </motion.li>
               ))}
             </AnimatePresence>
           </ul>
-          <footer className="space-y-3 border-t p-5">
-            <div className="flex justify-between text-lg font-semibold">
-              <span>Subtotal</span><span>{formatNaira(total)}</span>
+          <footer className="space-y-3 border-t bg-card/60 px-5 pt-4 pb-safe">
+            <div className="flex items-baseline justify-between">
+              <span className="text-muted-foreground">Subtotal</span>
+              <span className="text-xl font-semibold">{formatNaira(total)}</span>
             </div>
-            <p className="text-xs text-muted-foreground">Delivery is arranged with you on WhatsApp.</p>
+            <p className="text-xs text-muted-foreground">Delivery and payment are arranged with you on WhatsApp.</p>
             <Button asChild size="lg" className="w-full" onClick={() => setOpen(false)}>
-              <Link href="/checkout">Checkout</Link>
+              <Link href="/checkout">Checkout · {formatNaira(total)}</Link>
             </Button>
           </footer>
         </>

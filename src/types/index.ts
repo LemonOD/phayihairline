@@ -1,84 +1,21 @@
-export type Role = "customer" | "admin"
+import type { Database } from "./database"
 
-export type Category = {
-  slug: string
-  name: string
-  description: string
-  image_url: string | null
-  sort_order: number
-}
+type Tables = Database["public"]["Tables"]
 
-export type ProductVariant = {
-  id: string
-  product_id: string
-  options: Record<string, string>
-  price: number
-  compare_at_price: number | null
-  stock: number
-  sort_order: number
-}
-
-export type Product = {
-  id: string
-  slug: string
-  name: string
-  description: string
-  price: number
-  compare_at_price: number | null
-  category: string
-  images: string[]
-  features: string[]
-  tags: string[]
-  stock: number
-  rating: number
-  review_count: number
-  is_featured: boolean
-  is_active: boolean
-  option_names: string[]
-  variants?: ProductVariant[]
-  created_at: string
-}
-
-export type Review = {
-  id: string
-  product_id: string
-  author_name: string
-  rating: number
-  title: string | null
-  body: string
-  status: "published" | "hidden"
-  created_at: string
-}
-
-export type Service = {
-  id: string
-  slug: string
-  name: string
-  description: string
-  price: number
-  duration_minutes: number
-  features: string[]
-  sort_order: number
-  is_active: boolean
-}
-
-export type BookingStatus = "pending" | "confirmed" | "completed" | "cancelled"
-export type OrderStatus = "pending" | "confirmed" | "shipped" | "delivered" | "cancelled"
-
-export type Booking = {
-  id: string
-  service_id: string
-  customer_name: string
-  customer_phone: string
-  customer_email: string | null
-  starts_at: string
-  ends_at: string
-  notes: string | null
-  status: BookingStatus
-  created_at: string
+// Row types come straight from the database types, so the app and the schema cannot drift apart.
+export type Role = Tables["profiles"]["Row"]["role"]
+export type Category = Tables["categories"]["Row"]
+export type ProductVariant = Tables["product_variants"]["Row"]
+export type Product = Tables["products"]["Row"] & { variants?: ProductVariant[] }
+export type Review = Tables["reviews"]["Row"]
+export type Service = Tables["services"]["Row"]
+export type BookingStatus = Tables["bookings"]["Row"]["status"]
+export type OrderStatus = Tables["orders"]["Row"]["status"]
+export type Booking = Tables["bookings"]["Row"] & {
   service?: Pick<Service, "name" | "duration_minutes" | "price"> | null
 }
 
+/** One line of a placed order, as stored (and priced) by `place_order()`. */
 export type OrderItem = {
   product_id: string
   variant_id?: string | null
@@ -89,25 +26,20 @@ export type OrderItem = {
   image: string | null
 }
 
-export type Order = {
-  id: string
-  reference: string
-  customer_name: string
-  customer_phone: string
-  delivery_address: string
-  items: OrderItem[]
-  total: number
-  status: OrderStatus
-  created_at: string
-}
+/** `orders.items` is JSON in Postgres; the data layer validates it into `OrderItem[]`. */
+export type Order = Omit<Tables["orders"]["Row"], "items"> & { items: OrderItem[] }
 
-export type Profile = {
-  id: string
-  full_name: string | null
-  phone: string | null
-  role: Role
-}
+/** The few fields the cart and wishlist need, so server components can hand client buttons a small object. */
+export type ProductSummary = Pick<
+  Product, "id" | "slug" | "name" | "price" | "category" | "stock" | "images" | "option_names"
+>
 
-export type ActionResult<T = undefined> =
-  | { ok: true; data?: T }
-  | { ok: false; error: string; fieldErrors?: Record<string, string[]> }
+export type Profile = Pick<Tables["profiles"]["Row"], "id" | "full_name" | "phone" | "role">
+
+export type ActionFailure = { ok: false; error: string; fieldErrors?: Record<string, string[]> }
+
+/**
+ * `ActionResult` (no argument) is a success with no payload. `ActionResult<Data>` is a success that always
+ * carries `data`, so callers never have to null-check or cast it.
+ */
+export type ActionResult<T = void> = ([T] extends [void] ? { ok: true } : { ok: true; data: T }) | ActionFailure

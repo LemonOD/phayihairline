@@ -49,5 +49,5 @@ export async function getTakenSlots(date: string): Promise<TakenRange[]> {
     p_to: slotIso(date, 23),
   })
   if (error) throw new Error(`Could not load booked slots: ${error.message}`, { cause: error })
-  return ((data as { starts_at: string; ends_at: string }[]) ?? []).map((r) => ({ start: r.starts_at, end: r.ends_at }))
+  return (data ?? []).map((r) => ({ start: r.starts_at, end: r.ends_at }))
 }

@@ -17,14 +17,14 @@ export function SiteFooter() {
             Luxury hair extensions and wigs. Virgin and raw donor hair, bundles, closures, frontals and revamping, at a price you will love. Slay and save.
           </p>
           <div className="flex gap-3 pt-1">
-            <a href={whatsappLink("Hello PhayiHairline!")} aria-label="Chat on WhatsApp" className="rounded-full border p-2 hover:bg-muted">
+            <a href={whatsappLink("Hello PhayiHairline!")} aria-label="Chat on WhatsApp" className="flex size-11 items-center justify-center rounded-full border transition active:scale-95 hover:bg-muted">
               <MessageCircle className="size-4" />
             </a>
             {siteConfig.socials.map(({ platform, url }) => {
               const { Icon, label } = socialIcons[platform]
               return (
                 <a key={platform} href={url} target="_blank" rel="noopener noreferrer" aria-label={`${label} (opens in a new tab)`}
-                  className="rounded-full border p-2 transition-colors hover:bg-muted">
+                  className="flex size-11 items-center justify-center rounded-full border transition active:scale-95 hover:bg-muted">
                   <Icon />
                 </a>
               )
@@ -32,9 +32,9 @@ export function SiteFooter() {
           </div>
         </div>
 
-        <nav aria-label="Footer" className="grid grid-cols-2 gap-2 text-sm">
+        <nav aria-label="Footer" className="grid grid-cols-2 gap-x-4 text-sm">
           {navLinks.map((l) => (
-            <Link key={l.href} href={l.href} className="text-muted-foreground transition-colors hover:text-foreground">{l.label}</Link>
+            <Link key={l.href} href={l.href} className="tap text-muted-foreground transition-colors hover:text-foreground">{l.label}</Link>
           ))}
         </nav>
 

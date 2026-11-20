@@ -1,10 +1,12 @@
 import { createClient } from "@/lib/supabase/server"
 import { unwrap } from "@/lib/data/unwrap"
+import { toOrder } from "@/lib/orders"
+import type { Database } from "@/types/database"
 import type { Booking, Order, Product, Service } from "@/types"
 
 export async function getAdminProducts(): Promise<Product[]> {
   const supabase = await createClient()
-  return unwrap(await supabase.from("products").select("*").order("created_at", { ascending: false }), [] as Product[])
+  return unwrap(await supabase.from("products").select("*").order("created_at", { ascending: false }), [])
 }
 
 export async function getAdminProduct(id: string): Promise<Product | null> {
@@ -16,26 +18,26 @@ export async function getAdminProduct(id: string): Promise<Product | null> {
       .eq("id", id)
       .order("sort_order", { referencedTable: "product_variants" })
       .maybeSingle(),
-    null as Product | null,
+    null,
   )
 }
 
 export async function getAdminServices(): Promise<Service[]> {
   const supabase = await createClient()
-  return unwrap(await supabase.from("services").select("*").order("sort_order"), [] as Service[])
+  return unwrap(await supabase.from("services").select("*").order("sort_order"), [])
 }
 
 export async function getAdminService(id: string): Promise<Service | null> {
   const supabase = await createClient()
-  return unwrap(await supabase.from("services").select("*").eq("id", id).maybeSingle(), null as Service | null)
+  return unwrap(await supabase.from("services").select("*").eq("id", id).maybeSingle(), null)
 }
 
 export async function getAdminOrders(): Promise<Order[]> {
   const supabase = await createClient()
   return unwrap(
     await supabase.from("orders").select("*").order("created_at", { ascending: false }).limit(100),
-    [] as Order[],
-  )
+    [],
+  ).map(toOrder)
 }
 
 export async function getAdminBookings(): Promise<Booking[]> {
@@ -46,13 +48,13 @@ export async function getAdminBookings(): Promise<Booking[]> {
       .select("*, service:services(name, duration_minutes, price)")
       .order("starts_at", { ascending: true })
       .limit(100),
-    [] as Booking[],
+    [],
   )
 }
 
 export async function getDashboardStats() {
   const supabase = await createClient()
-  const count = (table: string, filter?: [string, string]) => {
+  const count = (table: keyof Database["public"]["Tables"], filter?: [string, string]) => {
     const q = supabase.from(table).select("*", { count: "exact", head: true })
     return (filter ? q.eq(filter[0], filter[1]) : q).then((r) => {
       if (r.error) throw new Error(`Database query failed: ${r.error.message}`, { cause: r.error })
@@ -81,6 +83,6 @@ export async function getAdminMessages(): Promise<ContactMessage[]> {
   const supabase = await createClient()
   return unwrap(
     await supabase.from("contact_messages").select("*").order("created_at", { ascending: false }).limit(100),
-    [] as ContactMessage[],
+    [],
   )
 }

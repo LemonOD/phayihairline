@@ -4,12 +4,12 @@ import Link from "next/link"
 import { useEffect, useState } from "react"
 import { Lock } from "lucide-react"
 import { ReviewForm } from "./review-form"
-import { createClient } from "@/lib/supabase/client"
 import { useAuth } from "@/stores/auth"
+import type { OrderStatus } from "@/types"
 
 type Eligibility = "checking" | "ok" | "not-purchased" | "reviewed"
 
-const BUYER_STATUSES = ["confirmed", "shipped", "delivered"]
+const BUYER_STATUSES: OrderStatus[] = ["confirmed", "shipped", "delivered"]
 
 function Note({ children }: { children: React.ReactNode }) {
   return (
@@ -31,12 +31,15 @@ export function ReviewGate({ productId }: { productId: string }) {
   useEffect(() => {
     if (!userId) return
     let cancelled = false
-    const supabase = createClient()
-    Promise.all([
-      supabase.from("reviews").select("id").eq("product_id", productId).eq("user_id", userId).maybeSingle(),
-      supabase.from("orders").select("id").in("status", BUYER_STATUSES)
-        .contains("items", [{ product_id: productId }]).limit(1),
-    ]).then(([mine, orders]) => {
+    // Imported on demand: only signed-in shoppers need the Supabase client on a product page.
+    import("@/lib/supabase/client").then(({ createClient }) => {
+      const supabase = createClient()
+      return Promise.all([
+        supabase.from("reviews").select("id").eq("product_id", productId).eq("user_id", userId).maybeSingle(),
+        supabase.from("orders").select("id").in("status", BUYER_STATUSES)
+          .contains("items", [{ product_id: productId }]).limit(1),
+      ])
+    }).then(([mine, orders]) => {
       if (cancelled) return
       const value: Eligibility = mine.data ? "reviewed" : orders.data?.length ? "ok" : "not-purchased"
       setResult({ userId, value })
@@ -46,7 +49,7 @@ export function ReviewGate({ productId }: { productId: string }) {
 
   if (auth.status === "loading") return <div className="h-16 animate-pulse rounded-lg bg-muted" />
   if (auth.status === "anon") {
-    return <Note>Only verified buyers can review. <Link href="/login" className="underline">Sign in</Link> to continue.</Note>
+    return <Note>Only verified buyers can review. <Link href="/login" className="underline underline-offset-2">Sign in</Link> to continue.</Note>
   }
 
   const value = result?.userId === userId ? result.value : "checking"

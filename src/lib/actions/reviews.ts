@@ -30,19 +30,34 @@ export async function submitReview(input: unknown): Promise<ActionResult> {
   return { ok: true }
 }
 
+type ProductRef = { category: string; slug: string }
+
+/** Refresh the pages that show this product's reviews and rating. PostgREST embeds arrive as an object or a one-item array. */
+function refreshReviewed({ product }: { product: ProductRef | ProductRef[] | null }) {
+  revalidatePath("/admin/reviews")
+  revalidatePath("/")
+  const ref = Array.isArray(product) ? product[0] : product
+  if (ref) revalidatePath(`/products/${ref.category}/${ref.slug}`)
+}
+
 export async function setReviewStatus(id: string, status: "published" | "hidden"): Promise<ActionResult> {
   await requireAdmin()
   const supabase = await createClient()
-  const { error } = await supabase.from("reviews").update({ status }).eq("id", id)
+  const { data, error } = await supabase
+    .from("reviews").update({ status }).eq("id", id).select("product:products(category, slug)").maybeSingle()
   if (error) return fail(error.message)
-  revalidatePath("/", "layout")
+  if (!data) return fail("Review not found")
+  refreshReviewed(data)
   return { ok: true }
 }
 
 export async function deleteReview(id: string): Promise<ActionResult> {
+  await requireAdmin()
   const supabase = await createClient()
-  const { error } = await supabase.from("reviews").delete().eq("id", id)
+  const { data, error } = await supabase
+    .from("reviews").delete().eq("id", id).select("product:products(category, slug)").maybeSingle()
   if (error) return fail(error.message)
-  revalidatePath("/", "layout")
+  if (!data) return fail("Review not found")
+  refreshReviewed(data)
   return { ok: true }
 }

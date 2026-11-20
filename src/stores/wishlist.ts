@@ -1,6 +1,6 @@
 import { create } from "zustand"
 import { persist } from "zustand/middleware"
-import type { Product } from "@/types"
+import type { Product, ProductSummary } from "@/types"
 
 export type WishItem = Pick<Product, "id" | "slug" | "name" | "price" | "category" | "stock"> & {
   image: string | null
@@ -9,7 +9,7 @@ export type WishItem = Pick<Product, "id" | "slug" | "name" | "price" | "categor
 type WishState = {
   items: WishItem[]
   open: boolean
-  toggle: (product: Product) => boolean
+  toggle: (product: ProductSummary) => boolean
   remove: (id: string) => void
   setOpen: (open: boolean) => void
 }

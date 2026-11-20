@@ -24,8 +24,8 @@ export default function AboutPage() {
           <p>We offer virgin and raw donor hair, bundles, closures and frontals, custom wigs made to order, and revamping and rewigging of units you already own. We ship worldwide, including the US and UK.</p>
         </Reveal>
         <div className="mt-14 grid gap-8 md:grid-cols-3">
-          {values.map(({ icon: Icon, title, text }, i) => (
-            <Reveal key={title} delay={i * 0.1} className="text-center">
+          {values.map(({ icon: Icon, title, text }) => (
+            <Reveal key={title} className="text-center">
               <span className="mx-auto mb-3 flex size-12 items-center justify-center rounded-full bg-accent/20 text-accent-text"><Icon className="size-5" /></span>
               <h3 className="font-sans font-semibold">{title}</h3>
               <p className="mt-1 text-sm text-muted-foreground">{text}</p>

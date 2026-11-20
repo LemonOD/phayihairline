@@ -11,10 +11,10 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
     <AuthShell
       title="Welcome back"
       subtitle={error ? "That link has expired. Please sign in or request a new one." : "Sign in to track orders and bookings."}
-      footer={<>New here? <Link href="/register" className="font-medium text-foreground underline">Create an account</Link></>}
+      footer={<>New here? <Link href="/register" className="tap font-medium text-foreground underline">Create an account</Link></>}
     >
       <LoginForm next={next} />
-      <Link href="/forgot-password" className="mt-4 block text-center text-sm text-muted-foreground hover:text-foreground">
+      <Link href="/forgot-password" className="tap mt-2 w-full justify-center text-sm text-muted-foreground hover:text-foreground">
         Forgot your password?
       </Link>
     </AuthShell>

@@ -21,6 +21,9 @@ export const metadata: Metadata = {
 }
 
 export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover", // lets us paint under the notch and respect safe-area insets
   themeColor: [
     { media: "(prefers-color-scheme: light)", color: "#faf7f2" },
     { media: "(prefers-color-scheme: dark)", color: "#1c1917" },
@@ -29,15 +32,15 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en-NG" suppressHydrationWarning className={`${inter.variable} ${playfair.variable}`}>
-      <body className="min-h-screen antialiased">
+    <html lang="en-NG" data-scroll-behavior="smooth" suppressHydrationWarning className={`${inter.variable} ${playfair.variable}`}>
+      <body className="min-h-dvh antialiased">
         <a href="#main"
           className="sr-only z-[60] rounded-md bg-primary px-4 py-2 text-primary-foreground focus:not-sr-only focus:fixed focus:left-4 focus:top-4">
           Skip to content
         </a>
         <Providers>
           <SiteHeader />
-          <main id="main" tabIndex={-1} className="min-h-[70vh] outline-none">{children}</main>
+          <main id="main" tabIndex={-1} className="min-h-[70dvh] outline-none">{children}</main>
           <SiteFooter />
         </Providers>
         {process.env.VERCEL && <Analytics />}

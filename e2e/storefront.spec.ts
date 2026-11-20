@@ -4,7 +4,7 @@ const PRODUCT = "/products/wigs/brazilian-body-wave-wig"
 
 test("browse → choose variant → cart → checkout summary", async ({ page }) => {
   await page.goto("/")
-  await expect(page.getByRole("heading", { level: 1 })).toContainText("flawlessly")
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("affordably")
 
   await page.goto(PRODUCT)
   await expect(page.getByRole("heading", { level: 1, name: /Brazilian Body Wave/ })).toBeVisible()
@@ -15,7 +15,8 @@ test("browse → choose variant → cart → checkout summary", async ({ page })
   await page.getByRole("button", { name: '26"' }).click()
   await expect(price).not.toHaveText(before ?? "")
 
-  await page.getByRole("button", { name: "Add to cart" }).click()
+  // On phones a sticky copy of this button can be on screen too, so take the inline one.
+  await page.getByRole("button", { name: "Add to cart" }).first().click()
   const cart = page.getByRole("dialog", { name: "Your cart" })
   await expect(cart).toBeVisible()
   await expect(cart.getByText(/26"/)).toBeVisible()
@@ -43,7 +44,7 @@ test("cart survives a reload", async ({ page }) => {
   await page.getByRole("button", { name: "Add to cart" }).first().click()
   await page.keyboard.press("Escape")
   await page.reload()
-  await page.getByRole("button", { name: "Cart", exact: true }).click()
+  await page.getByRole("button", { name: /^Cart(,|$)/ }).click()
   await expect(page.getByRole("dialog", { name: "Your cart" }).getByText("Wig Cap").first()).toBeVisible()
 })
 

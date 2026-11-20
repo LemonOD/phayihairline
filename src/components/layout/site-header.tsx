@@ -8,7 +8,7 @@ export function SiteHeader() {
     <header className="sticky top-0 z-40 border-b bg-background/80 backdrop-blur-lg">
       <HeaderClient
         logo={
-          <Link href="/" className="flex items-center gap-2 font-serif text-xl font-semibold tracking-tight">
+          <Link href="/" className="flex min-h-11 items-center gap-2 font-serif text-lg font-semibold tracking-tight md:text-xl">
             <BrandMark />
             <span>Phayi<span className="text-accent-text">Hairline</span></span>
           </Link>

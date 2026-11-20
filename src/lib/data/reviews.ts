@@ -11,7 +11,7 @@ export async function getReviews(productId: string): Promise<Review[]> {
       .eq("status", "published")
       .order("created_at", { ascending: false })
       .limit(30),
-    [] as Review[],
+    [],
   )
 }
 
@@ -29,6 +29,6 @@ export async function getAdminReviews() {
       .select("*, product:products(name)")
       .order("created_at", { ascending: false })
       .limit(100),
-    [] as (Review & { product: { name: string } | null })[],
+    [],
   )
 }

@@ -59,14 +59,14 @@ export default async function ProductPage({ params }: Props) {
   return (
     <PageTransition>
       <JsonLd data={jsonLd} />
-      <Container className="py-10">
-        <nav aria-label="Breadcrumb" className="mb-6 flex items-center gap-1 text-sm text-muted-foreground">
-          <Link href="/" className="hover:text-foreground">Home</Link><ChevronRight className="size-3" />
-          <Link href={`/products/${category}`} className="capitalize hover:text-foreground">{category}</Link>
+      <Container className="pb-32 pt-4 md:py-10">
+        <nav aria-label="Breadcrumb" className="mb-4 flex items-center gap-1 overflow-x-auto whitespace-nowrap text-sm text-muted-foreground [scrollbar-width:none] md:mb-6 [&::-webkit-scrollbar]:hidden">
+          <Link href="/" className="tap hover:text-foreground">Home</Link><ChevronRight className="size-3" />
+          <Link href={`/products/${category}`} className="tap capitalize hover:text-foreground">{category}</Link>
           <ChevronRight className="size-3" /><span className="line-clamp-1 text-foreground">{product.name}</span>
         </nav>
 
-        <div className="grid gap-10 lg:grid-cols-2">
+        <div className="grid gap-6 lg:grid-cols-2 lg:gap-10">
           <ProductGallery images={product.images} name={product.name} />
 
           <div className="space-y-6">
@@ -76,7 +76,7 @@ export default async function ProductPage({ params }: Props) {
                   <StarRating value={product.rating} /> {product.rating.toFixed(1)} · {product.review_count} review{product.review_count === 1 ? "" : "s"}
                 </a>
               )}
-              <h1 className="text-3xl font-semibold md:text-4xl">{product.name}</h1>
+              <h1 className="text-[1.75rem] font-semibold leading-tight md:text-4xl">{product.name}</h1>
             </div>
 
             <p className="leading-relaxed text-muted-foreground">{product.description}</p>

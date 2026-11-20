@@ -8,7 +8,7 @@
 
 > The rubric mentions TanStack Query. This project does not use it and doesn't need to: it is RSC-first with server actions. Section 4 below is therefore assessed against the data layer and the three client-side fetches that exist (booking slots, review eligibility, auth profile).
 
-> **Status update (same day):** C1, C2, C3 and W1 are fixed on this branch (not yet committed). 52 unit tests pass, lint and typecheck are clean, and the production build succeeds with a placeholder Supabase project. C2 needs `supabase/migrations/0005_booking_overlap.sql` applied to the database **before** the new code is deployed. W2-W26 and S1-S2 are still open.
+> **Status update:** C1, C2, C3, W1 shipped. **Batches A, B and C are done on this branch (uncommitted).** A: W2-W6, W18. B (accessibility plus a mobile-first redesign): W10-W13, W19, W20, S2, and the product gallery. C: W7, W8, W9, W15, W16, W17. Extra fixes found while doing it: sign-out never worked; the Supabase client was in every page's initial bundle; the page-entrance animation broke `position: fixed` descendants; missing product photo; no timeout on database calls. C needs `supabase/migrations/0006_atomic_product_save_and_order_lines.sql` applied, but the app also works without it (it falls back). Still open: W14, W21-W26, S1.
 
 ---
 

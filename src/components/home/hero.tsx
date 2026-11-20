@@ -26,23 +26,24 @@ export function Hero() {
       <motion.div aria-hidden className="pointer-events-none absolute -bottom-48 -left-32 size-[480px] rounded-full will-change-transform"
         style={{ y: orbY, background: "radial-gradient(closest-side, color-mix(in oklch, var(--primary) 18%, transparent), transparent)" }} />
 
-      <Container className="relative grid items-center gap-10 py-16 md:py-28 lg:grid-cols-[1.1fr_0.9fr]">
+      <Container className="relative grid items-center gap-8 pb-10 pt-8 md:gap-10 md:py-28 lg:grid-cols-[1.1fr_0.9fr]">
         <div className="max-w-3xl">
-          <p className="rise mb-4 text-xs font-semibold uppercase tracking-[0.3em] text-accent-text">
-            Lagos · Luxury hair · Wigs · Revamping
+          <p className="rise mb-3 text-[11px] font-semibold uppercase tracking-[0.22em] text-accent-text sm:mb-4 sm:text-xs sm:tracking-[0.3em]">
+            <span className="sm:hidden">Luxury hair · Lagos</span>
+            <span className="hidden sm:inline">Lagos · Luxury hair · Wigs · Revamping</span>
           </p>
-          <h1 className="rise-lift text-5xl font-semibold leading-[1.05] md:text-7xl">
+          <h1 className="rise-lift text-[2.5rem] font-semibold leading-[1.05] sm:text-5xl md:text-7xl">
             Luxury hair, <span className="italic text-accent-text">affordably</span> yours.
           </h1>
-          <p className="rise mt-6 max-w-xl text-lg text-muted-foreground" style={{ animationDelay: "0.12s" }}>
+          <p className="rise mt-4 max-w-xl text-base text-muted-foreground sm:mt-6 sm:text-lg" style={{ animationDelay: "0.12s" }}>
             Premium wigs, bundles, closures and frontals, plus custom units made to order. Slay everyday, and save while you do it.
           </p>
-          <div className="rise mt-9 flex flex-wrap gap-3" style={{ animationDelay: "0.22s" }}>
-            <Button asChild size="lg"><Link href="/products/wigs">Shop wigs <ArrowRight /></Link></Button>
-            <Button asChild size="lg" variant="outline"><Link href="/services"><CalendarCheck /> Book installation</Link></Button>
+          <div className="rise mt-6 flex flex-col gap-3 sm:mt-9 sm:flex-row" style={{ animationDelay: "0.22s" }}>
+            <Button asChild size="lg" className="w-full sm:w-auto"><Link href="/products/wigs">Shop wigs <ArrowRight /></Link></Button>
+            <Button asChild size="lg" variant="outline" className="w-full sm:w-auto"><Link href="/services"><CalendarCheck /> Book installation</Link></Button>
           </div>
         </div>
-        <div className="rise relative mx-auto aspect-[4/5] w-full max-w-md overflow-hidden rounded-2xl border shadow-xl" style={{ animationDelay: "0.15s" }}>
+        <div className="rise relative mx-auto aspect-[4/5] w-full max-w-md overflow-hidden rounded-2xl border shadow-xl sm:aspect-[4/4.6]" style={{ animationDelay: "0.15s" }}>
           <Image src="/brand/brand-portrait-bags.jpg" alt="Phayihairline founder holding branded gift bags, wearing a silky straight unit"
             fill priority sizes="(max-width:1024px) 90vw, 40vw" className="object-cover" />
         </div>

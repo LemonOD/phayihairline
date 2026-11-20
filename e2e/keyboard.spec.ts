@@ -28,7 +28,7 @@ test.describe("keyboard-only walkthrough", () => {
   test("cart drawer traps focus, closes with Escape and returns focus", async ({ page }) => {
     await page.goto("/")
     await page.waitForLoadState("networkidle") // wait for hydration before using the keyboard
-    const trigger = page.getByRole("button", { name: "Cart", exact: true })
+    const trigger = page.getByRole("button", { name: /^Cart(,|$)/ })
     await trigger.focus()
     await page.keyboard.press("Enter")
     const dialog = page.getByRole("dialog", { name: "Your cart" })

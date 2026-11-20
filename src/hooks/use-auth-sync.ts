@@ -2,21 +2,40 @@
 
 import { useEffect } from "react"
 import { usePathname } from "next/navigation"
-import { createClient } from "@/lib/supabase/client"
 import { useAuth } from "@/stores/auth"
+
+/** Supabase stores the session in `sb-<project>-auth-token` cookies (chunked as `.0`, `.1` when large). */
+const hasAuthCookie = () => document.cookie.split("; ").some((c) => /^sb-[^=]*-auth-token/.test(c))
 
 /**
  * Keeps the auth store in sync with the Supabase session. Mount once (in Providers).
  * Re-checks on navigation because server actions (sign in/out) change cookies without a full reload.
+ *
+ * The Supabase client is ~65 KB gzipped, so it is imported on demand: visitors without a session
+ * cookie (most shoppers) never download it.
  */
 export function useAuthSync() {
   const pathname = usePathname()
 
   useEffect(() => {
-    const supabase = createClient()
     let cancelled = false
+    let unsubscribe: (() => void) | undefined
 
     async function load() {
+      if (!hasAuthCookie()) {
+        if (useAuth.getState().status !== "anon") useAuth.setState({ status: "anon" }, true)
+        return
+      }
+
+      const { createClient } = await import("@/lib/supabase/client")
+      if (cancelled) return
+      const supabase = createClient()
+
+      if (!unsubscribe) {
+        const { data: sub } = supabase.auth.onAuthStateChange(() => { void load() })
+        unsubscribe = () => sub.subscription.unsubscribe()
+      }
+
       const { data } = await supabase.auth.getSession() // reads cookie locally, no network
       const user = data.session?.user
       const current = useAuth.getState()
@@ -36,8 +55,7 @@ export function useAuthSync() {
       }, true)
     }
 
-    load()
-    const { data: sub } = supabase.auth.onAuthStateChange(() => { load() })
-    return () => { cancelled = true; sub.subscription.unsubscribe() }
+    void load()
+    return () => { cancelled = true; unsubscribe?.() }
   }, [pathname])
 }

@@ -12,7 +12,7 @@ export default defineConfig({
   use: { baseURL, trace: "retain-on-failure" },
   projects: [
     { name: "desktop", use: { ...devices["Desktop Chrome"] } },
-    { name: "mobile", use: { ...devices["Pixel 7"] }, testMatch: /storefront|a11y/ },
+    { name: "mobile", use: { ...devices["Pixel 7"] }, testMatch: /storefront|a11y|mobile/ },
   ],
   // Reuse a running server locally; in CI build first, then serve the production bundle.
   webServer: process.env.E2E_BASE_URL ? undefined : {

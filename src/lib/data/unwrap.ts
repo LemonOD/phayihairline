@@ -8,10 +8,13 @@ import type { PostgrestError } from "@supabase/supabase-js"
  * `error.tsx` show a retry instead. During `next build` we fall back, so CI can build with a
  * placeholder Supabase project.
  */
-export function unwrap<T>(res: { data: T | null; error: PostgrestError | null }, fallback: T): T {
+export function unwrap<T>(
+  res: { data: T; error: null } | { data: null; error: PostgrestError },
+  fallback: NoInfer<T>,
+): T {
   if (res.error) {
     if (process.env.NEXT_PHASE === "phase-production-build") return fallback
     throw new Error(`Database query failed: ${res.error.message}`, { cause: res.error })
   }
-  return res.data ?? fallback
+  return res.data
 }
