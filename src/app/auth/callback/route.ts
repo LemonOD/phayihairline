@@ -1,12 +1,12 @@
 import { NextResponse, type NextRequest } from "next/server"
 import { createClient } from "@/lib/supabase/server"
+import { explicitNext, homeFor } from "@/lib/auth-redirect"
 import { emailWelcome } from "@/lib/notify"
 
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = request.nextUrl
   const code = searchParams.get("code")
-  const next = searchParams.get("next") ?? "/account"
-  const safe = next.startsWith("/") && !next.startsWith("//") ? next : "/account"
+  const wanted = explicitNext(searchParams.get("next"))
 
   if (code) {
     const supabase = await createClient()
@@ -19,7 +19,9 @@ export async function GET(request: NextRequest) {
       if (u?.email && !searchParams.get("next") && confirmedAgo < 5 * 60_000) {
         await emailWelcome({ email: u.email, name: u.user_metadata?.full_name })
       }
-      return NextResponse.redirect(`${origin}${safe}`)
+      if (wanted) return NextResponse.redirect(`${origin}${wanted}`)
+      const { data: profile } = u ? await supabase.from("profiles").select("role").eq("id", u.id).maybeSingle() : { data: null }
+      return NextResponse.redirect(`${origin}${homeFor(profile?.role)}`)
     }
   }
   return NextResponse.redirect(`${origin}/login?error=link-expired`)

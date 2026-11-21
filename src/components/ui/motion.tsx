@@ -1,43 +1,27 @@
-"use client"
+import { cn } from "@/lib/utils"
 
-import { motion, type HTMLMotionProps, type Variants } from "framer-motion"
+/**
+ * Layout wrappers. They used to animate on scroll, but scroll-linked transforms leave sections that never
+ * reach their trigger point (anything near the bottom of a page) permanently shrunk and offset, which looks
+ * like broken layout. Motion now lives where it cannot misplace content: the page entrance (`.rise-lift`),
+ * drawers, and press/hover feedback.
+ */
 
-const ease = [0.22, 1, 0.36, 1] as const
+type DivProps = React.ComponentProps<"div">
 
-export function Reveal({ delay = 0, y = 24, ...props }: HTMLMotionProps<"div"> & { delay?: number; y?: number }) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-60px" }}
-      transition={{ duration: 0.6, ease, delay }}
-      {...props}
-    />
-  )
+export function Reveal(props: DivProps) {
+  return <div {...props} />
 }
 
-const container: Variants = { hidden: {}, show: { transition: { staggerChildren: 0.07 } } }
-const item: Variants = {
-  hidden: { opacity: 0, y: 20 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.5, ease } },
+export function Stagger(props: DivProps) {
+  return <div {...props} />
 }
 
-export function Stagger(props: HTMLMotionProps<"div">) {
-  return (
-    <motion.div
-      variants={container}
-      initial="hidden"
-      whileInView="show"
-      viewport={{ once: true, margin: "-60px" }}
-      {...props}
-    />
-  )
+export function StaggerItem({ className, ...props }: DivProps) {
+  return <div className={cn("h-full", className)} {...props} />
 }
 
-export const StaggerItem = (props: HTMLMotionProps<"div">) => <motion.div variants={item} {...props} />
-
-export const PageTransition = ({ children }: { children: React.ReactNode }) => (
-  <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, ease }}>
-    {children}
-  </motion.div>
-)
+/** Moves only (never hides), so the page's LCP content paints immediately. */
+export function PageTransition({ children }: { children: React.ReactNode }) {
+  return <div className="rise-lift">{children}</div>
+}

@@ -8,7 +8,7 @@ export const metadata: Metadata = { title: "Create account" }
 export default function RegisterPage() {
   return (
     <AuthShell title="Create your account" subtitle="Save your details for faster checkout and bookings."
-      footer={<>Already have an account? <Link href="/login" className="font-medium text-foreground underline">Sign in</Link></>}>
+      footer={<>Already have an account? <Link href="/login" className="tap font-medium text-foreground underline">Sign in</Link></>}>
       <RegisterForm />
     </AuthShell>
   )

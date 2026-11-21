@@ -4,41 +4,38 @@ import Link from "next/link"
 import { useEffect, useRef, useState, useTransition } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
+import type { z } from "zod"
 import { motion } from "framer-motion"
-import { CheckCircle2, MessageCircle } from "lucide-react"
-import { z } from "zod"
+import { CheckCircle2, ChevronDown, MessageCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Field } from "@/components/ui/field"
 import { Input, Textarea } from "@/components/ui/input"
 import { ProductImage } from "@/components/ui/product-image"
 import { placeOrder } from "@/lib/actions/orders"
+import { checkoutFormSchema } from "@/lib/validation/schemas"
 import { useCart, cartTotal } from "@/stores/cart"
 import { track } from "@/lib/analytics"
 import { usePrefill } from "@/hooks/use-prefill"
 import { useMounted } from "@/hooks/use-mounted"
-import { formatNaira } from "@/lib/utils"
+import { cn, formatNaira } from "@/lib/utils"
 import { orderMessage, whatsappLink } from "@/lib/whatsapp"
 
-const phoneRe = /^(\+?234|0)[789][01]\d{8}$/
-const schema = z.object({
-  name: z.string().trim().min(2, "Enter your name"),
-  phone: z.string().trim().regex(phoneRe, "Enter a valid Nigerian phone number"),
-  address: z.string().trim().min(8, "Enter your delivery address"),
-})
-type Values = z.infer<typeof schema>
+type Values = z.infer<typeof checkoutFormSchema>
 
 type Placed = { link: string; reference: string }
 
 export function CheckoutForm() {
   const mounted = useMounted()
-  const { lines, clear } = useCart()
+  const lines = useCart((s) => s.lines)
+  const clear = useCart((s) => s.clear)
   const started = useRef(false)
   const [placed, setPlaced] = useState<Placed | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [showSummary, setShowSummary] = useState(true) // show what they are buying up front; tap the total to collapse
   const [pending, start] = useTransition()
   const { register, handleSubmit, getValues, setValue, formState: { errors } } = useForm<Values>({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(checkoutFormSchema),
     defaultValues: { name: "", phone: "", address: "" },
   })
   usePrefill((p) => {
@@ -81,47 +78,71 @@ export function CheckoutForm() {
     start(async () => {
       const items = lines.map((l) => ({ product_id: l.id, variant_id: l.variantId, quantity: l.quantity }))
       const res = await placeOrder({ ...values, items })
-      if (!res.ok || !res.data) return setError(res.ok ? "Something went wrong" : res.error)
+      if (!res.ok) return setError(res.error)
 
-      const { reference, total } = res.data
+      const { reference, total, items: priced } = res.data
       track("order_placed", { items: lines.length, value: total })
-      const message = orderMessage({ ...values, reference, total, items: lines })
+      // Prefer the lines the server actually charged; the saved cart can hold stale prices.
+      const charged = priced?.map((i) => ({ name: i.name, price: i.price, quantity: i.quantity, variantLabel: i.variant ?? null }))
+      const message = orderMessage({ ...values, reference, total, items: charged ?? lines })
       setPlaced({ reference, link: whatsappLink(message) })
       clear()
     })
   }
 
+  const total = mounted ? cartTotal(lines) : 0
+
   return (
-    <div className="grid gap-8 lg:grid-cols-[1fr_380px]">
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5" noValidate>
+    <div className="grid gap-6 pb-28 lg:grid-cols-[1fr_380px] lg:gap-8 lg:pb-0">
+      {/* First on phones (what am I paying for?), second column on desktop. */}
+      <aside className="lg:col-start-2 lg:row-start-1">
+        <Card className="h-fit p-4 sm:p-5 lg:sticky lg:top-24">
+          <div className="flex items-center justify-between gap-3">
+            <h2 className="font-sans text-lg font-semibold">Order summary</h2>
+            <button type="button" aria-expanded={showSummary} aria-controls="order-summary-body"
+              onClick={() => setShowSummary((v) => !v)}
+              className="-mr-2 flex min-h-11 items-center gap-1.5 rounded-md px-2 text-sm font-semibold transition active:scale-95 lg:hidden">
+              {formatNaira(total)}
+              <ChevronDown className={cn("size-4 transition-transform duration-200", showSummary && "rotate-180")} aria-hidden />
+            </button>
+          </div>
+          <div id="order-summary-body" className={cn("mt-4 space-y-4", showSummary ? "block" : "hidden", "lg:block")}>
+            <ul className="space-y-3">
+              {mounted && lines.map((l) => (
+                <li key={l.key} className="flex items-center gap-3 text-sm">
+                  <div className="relative size-14 shrink-0 overflow-hidden rounded-lg bg-muted"><ProductImage src={l.image} alt={l.name} sizes="56px" /></div>
+                  <span className="flex-1">{l.quantity} × {l.name}{l.variantLabel && <span className="block text-xs text-muted-foreground">{l.variantLabel}</span>}</span>
+                  <span className="font-medium">{formatNaira(l.price * l.quantity)}</span>
+                </li>
+              ))}
+            </ul>
+            <div className="flex justify-between border-t pt-4 text-lg font-semibold">
+              <span>Total</span><span>{formatNaira(total)}</span>
+            </div>
+          </div>
+        </Card>
+      </aside>
+
+      <form id="checkout-form" onSubmit={handleSubmit(onSubmit)} className="space-y-5 lg:col-start-1 lg:row-start-1" noValidate>
         <Field label="Full name" htmlFor="name" error={errors.name?.message}>
-          <Input id="name" autoComplete="name" aria-invalid={!!errors.name} {...register("name")} />
+          <Input id="name" autoComplete="name" enterKeyHint="next" {...register("name")} />
         </Field>
         <Field label="Phone number" htmlFor="phone" error={errors.phone?.message} hint="We'll reach you on this number">
-          <Input id="phone" type="tel" autoComplete="tel" aria-invalid={!!errors.phone} {...register("phone")} />
+          <Input id="phone" type="tel" inputMode="tel" autoComplete="tel" enterKeyHint="next" {...register("phone")} />
         </Field>
         <Field label="Delivery address" htmlFor="address" error={errors.address?.message}>
-          <Textarea id="address" autoComplete="street-address" aria-invalid={!!errors.address} {...register("address")} />
+          <Textarea id="address" autoComplete="street-address" {...register("address")} />
         </Field>
         {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
-        <Button type="submit" size="lg" className="w-full" loading={pending}>Place order</Button>
+        <Button type="submit" size="lg" className="hidden w-full lg:inline-flex" loading={pending}>Place order</Button>
       </form>
 
-      <Card className="h-fit space-y-4 p-5">
-        <h2 className="font-sans text-lg font-semibold">Order summary</h2>
-        <ul className="space-y-3">
-          {mounted && lines.map((l) => (
-            <li key={l.key} className="flex items-center gap-3 text-sm">
-              <div className="relative size-12 shrink-0 overflow-hidden rounded bg-muted"><ProductImage src={l.image} alt={l.name} sizes="48px" /></div>
-              <span className="flex-1">{l.quantity} × {l.name}{l.variantLabel && <span className="block text-xs text-muted-foreground">{l.variantLabel}</span>}</span>
-              <span>{formatNaira(l.price * l.quantity)}</span>
-            </li>
-          ))}
-        </ul>
-        <div className="flex justify-between border-t pt-4 text-lg font-semibold">
-          <span>Total</span><span>{formatNaira(mounted ? cartTotal(lines) : 0)}</span>
-        </div>
-      </Card>
+      {/* Thumb-reach submit on phones; the inline button above takes over from `lg`. */}
+      <div className="fixed inset-x-0 bottom-0 z-30 border-t bg-background/95 px-4 pt-3 pb-safe-sm backdrop-blur lg:hidden">
+        <Button type="submit" form="checkout-form" size="lg" className="w-full" loading={pending}>
+          Place order · {formatNaira(total)}
+        </Button>
+      </div>
     </div>
   )
 }

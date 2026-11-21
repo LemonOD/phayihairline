@@ -47,7 +47,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
           <nav className="mt-5 flex flex-wrap gap-2" aria-label="Categories">
             {categories.map((c) => (
               <Link key={c.slug} href={`/products/${c.slug}`}
-                className={cn("rounded-full border px-4 py-1.5 text-sm transition-colors hover:bg-muted",
+                className={cn("tap rounded-full border px-4 text-sm transition duration-150 active:scale-95 hover:bg-muted",
                   c.slug === category && "border-primary bg-primary text-primary-foreground hover:bg-primary")}>
                 {c.name}
               </Link>

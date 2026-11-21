@@ -9,12 +9,12 @@ export default async function AdminBookings() {
   const bookings = await getAdminBookings()
   return (
     <>
-      <h1 className="mb-6 text-3xl font-semibold">Bookings</h1>
+      <h1 className="mb-5 text-2xl font-semibold sm:mb-6 sm:text-3xl">Bookings</h1>
       <div className="space-y-4">
         {bookings.length === 0 && <Card className="p-6 text-muted-foreground">No bookings yet.</Card>}
         {bookings.map((b) => (
-          <Card key={b.id} className="space-y-2 p-5">
-            <div className="flex flex-wrap items-center justify-between gap-3">
+          <Card key={b.id} className="space-y-2 p-4 sm:p-5">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <p className="font-semibold">{b.service?.name}</p>
                 <p className="text-sm text-muted-foreground">{dateFmt.format(new Date(b.starts_at))}</p>

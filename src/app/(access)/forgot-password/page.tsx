@@ -8,7 +8,7 @@ export const metadata: Metadata = { title: "Reset password" }
 export default function ForgotPasswordPage() {
   return (
     <AuthShell title="Reset your password" subtitle="Enter your email and we'll send you a reset link."
-      footer={<Link href="/login" className="font-medium text-foreground underline">Back to sign in</Link>}>
+      footer={<Link href="/login" className="tap font-medium text-foreground underline">Back to sign in</Link>}>
       <ForgotPasswordForm />
     </AuthShell>
   )

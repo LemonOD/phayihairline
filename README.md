@@ -8,7 +8,7 @@ Supabase (Auth, Postgres + RLS, Storage) · Framer Motion · Zustand · React Ho
 
 ## Setup
 
-1. Create a Supabase project, then run the files in `supabase/migrations/` in order (0001 → 0004), then
+1. Create a Supabase project, then run the files in `supabase/migrations/` in order (0001 → 0007), then
    `supabase/seed.sql` and optionally `supabase/seed_variants.sql`, in the SQL editor (or `supabase db push`).
 2. `cp .env.example .env.local` and fill in the project URL and the **publishable** key (`sb_publishable_…`).
    Never put a secret/service-role key in a `NEXT_PUBLIC_` variable.
@@ -58,7 +58,7 @@ CI (`.github/workflows/ci.yml`) always runs lint, types, unit tests and build; s
 ## Before you launch
 
 - Confirm opening hours in `siteConfig.hours` (`src/lib/utils.ts`). They feed the contact page, booking slots and Google structured data.
-- Set `NEXT_PUBLIC_SITE_URL` to your real domain (sitemap, canonical URLs, social previews).
+- Production domain is `https://phayihairline.org`: set `NEXT_PUBLIC_SITE_URL` to it in Vercel, add it plus `https://phayihairline.org/auth/callback` in Supabase → Authentication → URL Configuration, and verify the domain in Resend so `NOTIFY_FROM` can use it.
 - Claim your Google Business Profile and keep name, address and phone identical to the site.
 - Analytics: `@vercel/analytics` renders only when hosted on Vercel; custom funnel events need a plan that supports them.
 

@@ -18,10 +18,10 @@ export const buttonVariants = cva(
         link: "text-primary underline-offset-4 hover:underline",
       },
       size: {
-        sm: "h-8 px-3 text-xs",
-        default: "h-10 px-4",
+        sm: "h-10 px-3.5 text-sm md:h-8 md:text-xs",
+        default: "h-11 px-5 md:h-10 md:px-4",
         lg: "h-12 px-7 text-base",
-        icon: "size-10",
+        icon: "size-11 md:size-10",
       },
     },
     defaultVariants: { variant: "default", size: "default" },
@@ -33,6 +33,8 @@ export interface ButtonProps
     VariantProps<typeof buttonVariants> {
   asChild?: boolean
   loading?: boolean
+  /** React 19 passes `ref` as an ordinary prop, so it is forwarded through the spread below. */
+  ref?: React.Ref<HTMLButtonElement>
 }
 
 export function Button({ className, variant, size, asChild, loading, children, disabled, ...props }: ButtonProps) {

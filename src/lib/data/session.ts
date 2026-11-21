@@ -1,6 +1,5 @@
 import { cache } from "react"
 import { createClient } from "@/lib/supabase/server"
-import type { Profile } from "@/types"
 
 /** Per-request memoised current user + profile. Safe to call from many components. */
 export const getSession = cache(async () => {
@@ -14,7 +13,7 @@ export const getSession = cache(async () => {
     .eq("id", data.user.id)
     .maybeSingle()
 
-  return { user: data.user, profile: (profile as Profile | null) ?? null }
+  return { user: data.user, profile }
 })
 
 export async function requireAdmin() {

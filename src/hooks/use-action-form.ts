@@ -4,7 +4,7 @@ import { useState, useTransition } from "react"
 import type { ActionResult } from "@/types"
 
 /** Runs a server action inside a transition and tracks its error/success state. */
-export function useActionForm<T>() {
+export function useActionForm<T = void>() {
   const [pending, start] = useTransition()
   const [error, setError] = useState<string | null>(null)
   const [data, setData] = useState<T | null>(null)
@@ -13,8 +13,9 @@ export function useActionForm<T>() {
     setError(null)
     start(async () => {
       const res = await action()
-      if (res && !res.ok) setError(res.error)
-      if (res && res.ok) setData((res.data as T) ?? null)
+      if (!res) return // the action redirected
+      if (!res.ok) return setError(res.error)
+      if ("data" in res) setData(res.data as T)
     })
   }
 

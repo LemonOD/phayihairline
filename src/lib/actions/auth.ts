@@ -3,12 +3,11 @@
 import { headers } from "next/headers"
 import { redirect } from "next/navigation"
 import { createClient } from "@/lib/supabase/server"
+import { explicitNext, homeFor } from "@/lib/auth-redirect"
 import { emailWelcome } from "@/lib/notify"
 import { emailSchema, loginSchema, passwordSchema, registerSchema } from "@/lib/validation/schemas"
 import { fail, validationError } from "./helpers"
 import type { ActionResult } from "@/types"
-
-const safeNext = (next?: string | null) => (next && next.startsWith("/") && !next.startsWith("//") ? next : "/account")
 
 async function origin() {
   const h = await headers()
@@ -20,9 +19,14 @@ export async function signIn(input: unknown, next?: string | null): Promise<Acti
   if (!parsed.success) return validationError(parsed.error)
 
   const supabase = await createClient()
-  const { error } = await supabase.auth.signInWithPassword(parsed.data)
+  const { data, error } = await supabase.auth.signInWithPassword(parsed.data)
   if (error) return fail("Incorrect email or password")
-  redirect(safeNext(next))
+
+  // A page they were sent here from wins; otherwise admins go straight to the dashboard.
+  const wanted = explicitNext(next)
+  if (wanted) redirect(wanted)
+  const { data: profile } = await supabase.from("profiles").select("role").eq("id", data.user.id).maybeSingle()
+  redirect(homeFor(profile?.role))
 }
 
 export async function signUp(input: unknown): Promise<ActionResult<{ needsConfirmation: boolean }>> {

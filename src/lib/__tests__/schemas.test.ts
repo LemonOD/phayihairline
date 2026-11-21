@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 import {
-  bookingSchema, checkoutSchema, contactSchema, passwordSchema, productSchema, registerSchema, reviewSchema,
+  bookingSchema, checkoutSchema, contactSchema, passwordSchema, productSchema, registerSchema, reviewSchema, serviceSchema,
 } from "@/lib/validation/schemas"
 
 const uuid = "123e4567-e89b-42d3-a456-426614174000"
@@ -88,5 +88,34 @@ describe("productSchema variants", () => {
   it("coerces numeric strings from form inputs", () => {
     const r = productSchema.parse({ ...base, price: "2500", stock: "3", variants: [] })
     expect(r.price).toBe(2500)
+  })
+})
+
+describe("productSchema images", () => {
+  const base = { name: "Wig", price: 1000, category: "wigs", stock: 1 }
+  const ok = (images: string[]) => productSchema.safeParse({ ...base, images }).success
+
+  it("accepts Supabase Storage URLs and bundled site-relative photos", () => {
+    expect(ok(["https://abc.supabase.co/storage/v1/object/public/product-images/a.jpg", "/brand/product-curly-revamp.jpg"])).toBe(true)
+  })
+  it.each(["javascript:alert(1)", "//evil.example/x.jpg", "http://insecure.example/x.jpg", "x.jpg"])("rejects %s", (img) => {
+    expect(ok([img])).toBe(false)
+  })
+})
+
+describe("serviceSchema price", () => {
+  const base = { name: "Custom install", duration_minutes: "120" }
+
+  it("keeps a fixed price, coercing the form string", () => {
+    expect(serviceSchema.parse({ ...base, price: "15000" }).price).toBe(15000)
+  })
+
+  it("accepts no price (null or blank) as 'based on request'", () => {
+    expect(serviceSchema.parse({ ...base, price: null }).price).toBeNull()
+    expect(serviceSchema.parse({ ...base, price: "" }).price).toBeNull()
+  })
+
+  it("still rejects a negative price", () => {
+    expect(serviceSchema.safeParse({ ...base, price: "-5" }).success).toBe(false)
   })
 })

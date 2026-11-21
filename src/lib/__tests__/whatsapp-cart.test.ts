@@ -6,10 +6,10 @@ import type { Product, ProductVariant } from "@/types"
 const product: Product = {
   id: "p1", slug: "wig", name: "Wig", description: "", price: 10000, compare_at_price: null, category: "wigs",
   images: [], features: [], tags: [], stock: 5, rating: 0, review_count: 0, is_featured: false, is_active: true,
-  option_names: ["Length"], created_at: "",
+  option_names: ["Length"], created_at: "", updated_at: "",
 }
 const v = (id: string, len: string, price: number, stock = 5): ProductVariant =>
-  ({ id, product_id: "p1", options: { Length: len }, price, compare_at_price: null, stock, sort_order: 0 })
+  ({ id, product_id: "p1", options: { Length: len }, price, compare_at_price: null, stock, sort_order: 0, created_at: "" })
 
 beforeEach(() => useCart.setState({ lines: [], open: false }))
 

@@ -1,11 +1,11 @@
 import { create } from "zustand"
 import { persist } from "zustand/middleware"
 import { track } from "@/lib/analytics"
-import type { Product, ProductVariant } from "@/types"
+import type { Product, ProductSummary, ProductVariant } from "@/types"
 
 export const lineKey = (productId: string, variantId?: string | null) => `${productId}:${variantId ?? ""}`
 
-export const variantLabel = (product: Product, variant: ProductVariant) =>
+export const variantLabel = (product: Pick<Product, "option_names">, variant: ProductVariant) =>
   product.option_names.map((n) => variant.options[n]).filter(Boolean).join(" / ")
 
 export type CartLine = {
@@ -26,7 +26,7 @@ export type CartLine = {
 type CartState = {
   lines: CartLine[]
   open: boolean
-  add: (product: Product, quantity?: number, variant?: ProductVariant | null) => void
+  add: (product: ProductSummary, quantity?: number, variant?: ProductVariant | null) => void
   setQuantity: (key: string, quantity: number) => void
   remove: (key: string) => void
   clear: () => void
@@ -38,10 +38,11 @@ export const useCart = create<CartState>()(
     (set) => ({
       lines: [],
       open: false,
-      add: (p, quantity = 1, variant = null) =>
+      add: (p, quantity = 1, variant = null) => {
+        // Side effects stay out of the updater: it must be pure (React may call updaters twice in Strict Mode).
+        track("add_to_cart", { product: p.name, value: variant?.price ?? p.price })
         set((s) => {
           const key = lineKey(p.id, variant?.id)
-          track("add_to_cart", { product: p.name, value: variant?.price ?? p.price })
           const stock = variant ? variant.stock : p.stock
           const existing = s.lines.find((l) => l.key === key)
           if (existing) {
@@ -54,7 +55,8 @@ export const useCart = create<CartState>()(
             category: p.category, stock, quantity: Math.min(quantity, Math.max(stock, 1)),
           }
           return { lines: [...s.lines, line], open: true }
-        }),
+        })
+      },
       setQuantity: (key, quantity) =>
         set((s) => ({
           lines: s.lines

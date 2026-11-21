@@ -15,7 +15,7 @@ type Props<T extends string> = {
 export function StatusSelect<T extends string>({ id, value, options, action }: Props<T>) {
   const [pending, start] = useTransition()
   return (
-    <Select value={value} disabled={pending} aria-label="Status" className="h-8 w-36 text-xs capitalize"
+    <Select value={value} disabled={pending} aria-label="Status" className="h-11 w-full text-sm capitalize sm:h-9 sm:w-40"
       onChange={(e) => start(async () => {
         const res = await action(id, e.target.value as T)
         if (res.ok) toast.success("Status updated")

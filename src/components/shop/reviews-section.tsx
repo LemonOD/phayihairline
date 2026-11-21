@@ -1,7 +1,6 @@
 import { BadgeCheck } from "lucide-react"
 import { ReviewGate } from "./review-gate"
 import { StarRating } from "./star-rating"
-import { Reveal } from "@/components/ui/motion"
 import { getReviews, summarize } from "@/lib/data/reviews"
 import type { Product } from "@/types"
 
@@ -38,9 +37,9 @@ export async function ReviewsSection({ product }: { product: Product }) {
         </div>
 
         <ul className="space-y-6">
-          {reviews.map((r, i) => (
-            <Reveal key={r.id} delay={Math.min(i, 4) * 0.05} className="border-b pb-6 last:border-0">
-              <li>
+          {reviews.map((r) => (
+            <li key={r.id} className="border-b pb-6 last:border-0">
+              <div>
                 <div className="flex flex-wrap items-center gap-2">
                   <StarRating value={r.rating} />
                   <span className="flex items-center gap-1 text-xs text-emerald-600 dark:text-emerald-400"><BadgeCheck className="size-3.5" /> Verified buyer</span>
@@ -48,8 +47,8 @@ export async function ReviewsSection({ product }: { product: Product }) {
                 {r.title && <h3 className="mt-2 font-sans font-semibold">{r.title}</h3>}
                 <p className="mt-1 whitespace-pre-wrap text-sm leading-relaxed">{r.body}</p>
                 <p className="mt-2 text-xs text-muted-foreground">{r.author_name} · {dateFmt.format(new Date(r.created_at))}</p>
-              </li>
-            </Reveal>
+              </div>
+            </li>
           ))}
         </ul>
       </div>

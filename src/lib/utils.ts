@@ -13,6 +13,11 @@ const naira = new Intl.NumberFormat("en-NG", {
 
 export const formatNaira = (amount: number) => naira.format(amount)
 
+export const PRICE_ON_REQUEST = "Based on request"
+
+/** Services without a fixed price (null) read "Based on request" instead of a number. */
+export const formatServicePrice = (price: number | null) => (price === null ? PRICE_ON_REQUEST : formatNaira(price))
+
 export const discountPercent = (price: number, compareAt: number | null) =>
   compareAt && compareAt > price ? Math.round(((compareAt - price) / compareAt) * 100) : 0
 

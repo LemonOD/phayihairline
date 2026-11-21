@@ -14,7 +14,10 @@ import { getCategories, getFeaturedProducts } from "@/lib/data/catalog"
 export const revalidate = 60
 
 export default async function HomePage() {
-  const [categories, featured] = await Promise.all([getCategories(), getFeaturedProducts(8)])
+  const [categories, featuredAll] = await Promise.all([getCategories(), getFeaturedProducts(12)])
+  // Lead with products that have real photos; a card with a placeholder icon cheapens the first impression.
+  const withPhotos = featuredAll.filter((p) => p.images.length > 0)
+  const featured = (withPhotos.length ? withPhotos : featuredAll).slice(0, 8)
 
   return (
     <>
@@ -23,7 +26,7 @@ export default async function HomePage() {
       <TrustStrip />
       <CategoryTiles categories={categories} />
       {featured.length > 0 && (
-        <section className="pb-8">
+        <section className="pb-6 md:pb-8">
           <Container>
             <Reveal><SectionHeading eyebrow="Bestsellers" title="Featured products" description="Our most-loved pieces, picked by you." /></Reveal>
             <ProductGrid products={featured} />

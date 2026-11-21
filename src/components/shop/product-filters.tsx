@@ -59,11 +59,11 @@ export function ProductFilters({ total }: { total: number }) {
     <div className={cn("mb-8 space-y-4 transition-opacity", pending && "opacity-60")}>
       <div className="flex items-center gap-3">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-3 size-4 text-muted-foreground" />
-          <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search products…"
-            className="pl-9" aria-label="Search products" />
+          <Search className="pointer-events-none absolute left-3.5 top-4 size-4 text-muted-foreground md:left-3 md:top-3" />
+          <Input type="search" enterKeyHint="search" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search products…"
+            className="pl-10 md:pl-9" aria-label="Search products" />
         </div>
-        <Button variant="outline" className="sm:hidden" onClick={() => setOpen((o) => !o)}>
+        <Button variant="outline" className="sm:hidden" aria-expanded={open} aria-controls="mobile-filters" onClick={() => setOpen((o) => !o)}>
           <SlidersHorizontal /> Filters
         </Button>
         <div className="hidden items-center gap-3 sm:flex">
@@ -78,7 +78,7 @@ export function ProductFilters({ total }: { total: number }) {
       </div>
 
       {open && (
-        <div className="grid gap-3 sm:hidden">
+        <div id="mobile-filters" className="grid gap-3 sm:hidden">
           <Select value={range} onChange={(e) => setRange(e.target.value)} aria-label="Price range">
             {PRICE_RANGES.map((r) => <option key={r.value} value={r.value}>{r.label}</option>)}
           </Select>

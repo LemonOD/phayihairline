@@ -11,12 +11,12 @@ const items = [
 
 export function TrustStrip() {
   return (
-    <section className="border-y bg-secondary/50 py-10">
-      <Container className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
-        {items.map(({ icon: Icon, title, text }, i) => (
-          <Reveal key={title} delay={i * 0.1} className="flex gap-4">
-            <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-accent/20 text-accent-text"><Icon className="size-5" /></span>
-            <div><h2 className="font-sans text-base font-semibold">{title}</h2><p className="text-sm text-muted-foreground">{text}</p></div>
+    <section className="border-y bg-secondary/50 py-8 md:py-10">
+      <Container className="grid grid-cols-2 gap-x-4 gap-y-7 lg:grid-cols-4 lg:gap-8">
+        {items.map(({ icon: Icon, title, text }) => (
+          <Reveal key={title} className="flex flex-col gap-3 md:flex-row md:gap-4">
+            <span className="flex size-10 shrink-0 md:size-11 items-center justify-center rounded-full bg-accent/20 text-accent-text"><Icon className="size-5" /></span>
+            <div><h2 className="font-sans text-[15px] font-semibold md:text-base">{title}</h2><p className="mt-0.5 text-[13px] leading-snug text-muted-foreground md:text-sm">{text}</p></div>
           </Reveal>
         ))}
       </Container>
