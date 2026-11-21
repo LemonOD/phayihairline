@@ -24,6 +24,9 @@ export function RegisterForm() {
         <MailCheck className="mx-auto size-12 text-accent-text" />
         <p className="font-medium">Check your inbox</p>
         <p className="text-sm text-muted-foreground">We sent a confirmation link. Open it to activate your account.</p>
+        <p className="text-sm text-muted-foreground">
+          Can’t see it? Check your spam or junk folder, and tap “Not spam” so future emails reach your inbox.
+        </p>
       </div>
     )
   }

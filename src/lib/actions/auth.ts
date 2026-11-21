@@ -9,9 +9,16 @@ import { emailSchema, loginSchema, passwordSchema, registerSchema } from "@/lib/
 import { fail, validationError } from "./helpers"
 import type { ActionResult } from "@/types"
 
+/**
+ * Where email links (confirm, reset) should send people. In production that is always the
+ * configured site URL, so a signup from www or a preview URL can't produce a link to the wrong host.
+ * Locally it follows the request, so localhost testing still works.
+ */
 async function origin() {
+  const configured = process.env.NEXT_PUBLIC_SITE_URL
+  if (process.env.NODE_ENV === "production" && configured && !configured.includes("localhost")) return configured
   const h = await headers()
-  return h.get("origin") ?? process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"
+  return h.get("origin") ?? configured ?? "http://localhost:3000"
 }
 
 export async function signIn(input: unknown, next?: string | null): Promise<ActionResult> {
