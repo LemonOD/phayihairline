@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { Button } from "@/components/ui/button"
 import { Field } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
+import { PasswordInput } from "@/components/ui/password-input"
 import { signIn } from "@/lib/actions/auth"
 import { loginSchema } from "@/lib/validation/schemas"
 import { useActionForm } from "@/hooks/use-action-form"
@@ -22,7 +23,7 @@ export function LoginForm({ next }: { next?: string }) {
         <Input id="email" type="email" autoComplete="email" aria-invalid={!!errors.email} {...register("email")} />
       </Field>
       <Field label="Password" htmlFor="password" error={errors.password?.message}>
-        <Input id="password" type="password" autoComplete="current-password" aria-invalid={!!errors.password} {...register("password")} />
+        <PasswordInput id="password" autoComplete="current-password" aria-invalid={!!errors.password} {...register("password")} />
       </Field>
       {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
       <Button type="submit" className="w-full" loading={pending}>Sign in</Button>

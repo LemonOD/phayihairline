@@ -6,6 +6,7 @@ import { MailCheck } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Field } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
+import { PasswordInput } from "@/components/ui/password-input"
 import { signUp } from "@/lib/actions/auth"
 import { registerSchema } from "@/lib/validation/schemas"
 import { useActionForm } from "@/hooks/use-action-form"
@@ -39,7 +40,7 @@ export function RegisterForm() {
         <Input id="phone" type="tel" autoComplete="tel" aria-invalid={!!errors.phone} {...register("phone")} />
       </Field>
       <Field label="Password" htmlFor="password" error={errors.password?.message} hint="At least 8 characters">
-        <Input id="password" type="password" autoComplete="new-password" aria-invalid={!!errors.password} {...register("password")} />
+        <PasswordInput id="password" autoComplete="new-password" aria-invalid={!!errors.password} {...register("password")} />
       </Field>
       {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
       <Button type="submit" className="w-full" loading={pending}>Create account</Button>

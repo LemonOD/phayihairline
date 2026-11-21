@@ -6,6 +6,7 @@ import { MailCheck } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Field } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
+import { PasswordInput } from "@/components/ui/password-input"
 import { requestPasswordReset, updatePassword } from "@/lib/actions/auth"
 import { emailSchema, passwordSchema } from "@/lib/validation/schemas"
 import { useActionForm } from "@/hooks/use-action-form"
@@ -46,10 +47,10 @@ export function UpdatePasswordForm() {
   return (
     <form onSubmit={handleSubmit((v) => run(() => updatePassword(v)))} className="space-y-4" noValidate>
       <Field label="New password" htmlFor="password" error={errors.password?.message}>
-        <Input id="password" type="password" autoComplete="new-password" aria-invalid={!!errors.password} {...register("password")} />
+        <PasswordInput id="password" autoComplete="new-password" aria-invalid={!!errors.password} {...register("password")} />
       </Field>
       <Field label="Confirm password" htmlFor="confirm" error={errors.confirm?.message}>
-        <Input id="confirm" type="password" autoComplete="new-password" aria-invalid={!!errors.confirm} {...register("confirm")} />
+        <PasswordInput id="confirm" autoComplete="new-password" aria-invalid={!!errors.confirm} {...register("confirm")} />
       </Field>
       {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
       <Button type="submit" className="w-full" loading={pending}>Update password</Button>
