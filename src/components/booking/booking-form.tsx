@@ -14,7 +14,7 @@ import { getAvailableSlots, type Slot } from "@/lib/actions/slots"
 import { track } from "@/lib/analytics"
 import { bookingFormSchema } from "@/lib/validation/schemas"
 import { usePrefill } from "@/hooks/use-prefill"
-import { formatNaira, cn } from "@/lib/utils"
+import { formatServicePrice, cn } from "@/lib/utils"
 import type { Service } from "@/types"
 
 type Values = z.infer<typeof bookingFormSchema>
@@ -91,10 +91,11 @@ export function BookingForm({ services, initialSlug }: Props) {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6" noValidate>
       <div className="grid gap-5 sm:grid-cols-2">
-        <Field label="Service" htmlFor="serviceId" error={errors.serviceId?.message}>
+        <Field label="Service" htmlFor="serviceId" error={errors.serviceId?.message}
+          hint={service && service.price === null ? "Price depends on the style you want. We'll agree it with you before the appointment." : undefined}>
           <Select id="serviceId" {...register("serviceId", { onChange: () => setSlot(null) })}>
             <option value="">Select a service…</option>
-            {services.map((s) => <option key={s.id} value={s.id}>{s.name} — {formatNaira(s.price)}</option>)}
+            {services.map((s) => <option key={s.id} value={s.id}>{s.name} — {formatServicePrice(s.price)}</option>)}
           </Select>
         </Field>
         <Field label="Date" htmlFor="date">

@@ -11,12 +11,12 @@ export default async function AdminReviews() {
   const reviews = await getAdminReviews()
   return (
     <>
-      <h1 className="mb-6 text-3xl font-semibold">Reviews</h1>
+      <h1 className="mb-5 text-2xl font-semibold sm:mb-6 sm:text-3xl">Reviews</h1>
       <div className="space-y-4">
         {reviews.length === 0 && <Card className="p-6 text-muted-foreground">No reviews yet.</Card>}
         {reviews.map((r) => (
-          <Card key={r.id} className="space-y-2 p-5">
-            <div className="flex flex-wrap items-center justify-between gap-3">
+          <Card key={r.id} className="space-y-2 p-4 sm:p-5">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <p className="font-semibold">{r.product?.name}</p>
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">

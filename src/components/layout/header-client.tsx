@@ -53,17 +53,17 @@ export function HeaderClient({ logo }: Props) {
   const wishN = mounted ? wishes : 0
 
   return (
-    <Container className="grid h-14 grid-cols-[1fr_auto_1fr] items-center gap-2 md:flex md:h-16 md:justify-between md:gap-4">
-      <div className="flex md:hidden">
+    <Container className="grid h-14 grid-cols-[1fr_auto_1fr] items-center gap-2 lg:flex lg:h-16 lg:justify-between lg:gap-4">
+      <div className="flex lg:hidden">
         <Button variant="ghost" size="icon" className="-ml-2" aria-label="Open menu" aria-haspopup="dialog"
           aria-expanded={menuOpen} onClick={() => setMenuOpen(true)}>
           <Menu />
         </Button>
       </div>
 
-      <div className="justify-self-center md:justify-self-auto">{logo}</div>
+      <div className="justify-self-center lg:justify-self-auto">{logo}</div>
 
-      <nav className="hidden items-center gap-1 md:flex" aria-label="Main">
+      <nav className="hidden items-center gap-1 lg:flex" aria-label="Main">
         {navLinks.map((l) => {
           const active = pathname.startsWith(l.href)
           return (
@@ -76,9 +76,9 @@ export function HeaderClient({ logo }: Props) {
         })}
       </nav>
 
-      <div className="flex items-center justify-end gap-0.5 md:gap-1">
-        <div className="hidden md:block"><ThemeToggle /></div>
-        <Button variant="ghost" size="icon" className="relative hidden md:inline-flex"
+      <div className="flex items-center justify-end gap-0.5 lg:gap-1">
+        <div className="hidden lg:block"><ThemeToggle /></div>
+        <Button variant="ghost" size="icon" className="relative hidden lg:inline-flex"
           aria-label={wishN ? `Wishlist, ${itemsLabel(wishN)}` : "Wishlist"} onClick={() => setWishOpen(true)}>
           <Heart />
           <CountBadge count={wishN} />

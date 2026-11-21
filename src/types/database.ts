@@ -84,7 +84,8 @@ export type Database = {
         slug: string
         name: string
         description: string
-        price: number
+        /** null = priced on request (depends on the style the client wants) */
+        price: number | null
         duration_minutes: number
         features: string[]
         sort_order: number

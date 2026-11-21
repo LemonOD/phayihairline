@@ -115,7 +115,11 @@ export const reviewSchema = z.object({
 export const serviceSchema = z.object({
   name: z.string().trim().min(2, "Enter a name"),
   description: z.string().trim().default(""),
-  price: z.coerce.number().int().min(0),
+  /** null / blank = "Based on request" (no fixed price). */
+  price: z.preprocess(
+    (v) => (v === null || v === undefined || v === "" ? null : v),
+    z.coerce.number().int().min(0).nullable(),
+  ),
   duration_minutes: z.coerce.number().int().min(15).max(600),
   features: z.array(z.string()).default([]),
   sort_order: z.coerce.number().int().default(0),

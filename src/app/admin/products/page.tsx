@@ -14,22 +14,27 @@ export default async function AdminProducts() {
   const products = await getAdminProducts()
   return (
     <>
-      <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-3xl font-semibold">Products</h1>
+      <div className="mb-5 flex items-center justify-between gap-3 sm:mb-6">
+        <h1 className="text-2xl font-semibold sm:text-3xl">Products</h1>
         <Button asChild><Link href="/admin/products/new"><Plus /> New product</Link></Button>
       </div>
       <Card className="divide-y">
         {products.length === 0 && <p className="p-6 text-muted-foreground">No products yet.</p>}
         {products.map((p) => (
-          <div key={p.id} className="flex items-center gap-4 p-4">
-            <div className="relative size-14 shrink-0 overflow-hidden rounded-md bg-muted"><ProductImage src={p.images[0]} alt={p.name} sizes="56px" /></div>
+          <div key={p.id} className="relative flex items-start gap-3 p-3 transition-colors hover:bg-muted/40 sm:items-center sm:gap-4 sm:p-4">
+            <div className="relative size-14 shrink-0 overflow-hidden rounded-lg bg-muted sm:size-16"><ProductImage src={p.images[0]} alt="" sizes="64px" /></div>
             <div className="min-w-0 flex-1">
-              <Link href={`/admin/products/${p.id}`} className="line-clamp-1 font-medium hover:underline">{p.name}</Link>
-              <p className="text-sm text-muted-foreground capitalize">{p.category} · {formatNaira(p.price)} · {p.stock} in stock</p>
+              {/* Stretched link: the whole row opens the product. */}
+              <Link href={`/admin/products/${p.id}`} className="line-clamp-2 font-medium leading-snug after:absolute after:inset-0 hover:underline">{p.name}</Link>
+              <p className="mt-0.5 text-sm text-muted-foreground"><span className="capitalize">{p.category}</span> · {formatNaira(p.price)} · {p.stock} in stock</p>
+              {(!p.is_active || p.is_featured) && (
+                <div className="mt-1.5 flex flex-wrap gap-1.5">
+                  {!p.is_active && <Badge variant="muted">Hidden</Badge>}
+                  {p.is_featured && <Badge variant="accent">Featured</Badge>}
+                </div>
+              )}
             </div>
-            {!p.is_active && <Badge variant="muted">Hidden</Badge>}
-            {p.is_featured && <Badge variant="accent">Featured</Badge>}
-            <DeleteProductButton id={p.id} name={p.name} />
+            <div className="relative z-10 -mr-1 sm:mr-0"><DeleteProductButton id={p.id} name={p.name} /></div>
           </div>
         ))}
       </Card>

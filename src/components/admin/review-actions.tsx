@@ -5,11 +5,13 @@ import { useTransition } from "react"
 import { Eye, EyeOff, Trash2 } from "lucide-react"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
+import { useConfirm } from "@/components/ui/confirm"
 import { deleteReview, setReviewStatus } from "@/lib/actions/reviews"
 
 export function ReviewActions({ id, status }: { id: string; status: "published" | "hidden" }) {
   const router = useRouter()
   const [pending, start] = useTransition()
+  const confirm = useConfirm()
 
   const run = (fn: () => Promise<{ ok: boolean; error?: string }>, done: string) =>
     start(async () => {
@@ -23,8 +25,15 @@ export function ReviewActions({ id, status }: { id: string; status: "published" 
         onClick={() => run(() => setReviewStatus(id, status === "published" ? "hidden" : "published"), "Updated")}>
         {status === "published" ? <><EyeOff /> Hide</> : <><Eye /> Show</>}
       </Button>
-      <Button size="icon" variant="ghost" className="size-8" aria-label="Delete review" disabled={pending}
-        onClick={() => confirm("Delete this review permanently?") && run(() => deleteReview(id), "Deleted")}>
+      <Button size="icon" variant="ghost" aria-label="Delete review" disabled={pending}
+        onClick={async () => {
+          const ok = await confirm({
+            title: "Delete this review?",
+            description: "It's removed permanently. Hide it instead if you might want it back.",
+            confirmLabel: "Delete review",
+          })
+          if (ok) run(() => deleteReview(id), "Deleted")
+        }}>
         <Trash2 />
       </Button>
     </div>

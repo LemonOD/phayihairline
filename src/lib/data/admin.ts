@@ -52,6 +52,21 @@ export async function getAdminBookings(): Promise<Booking[]> {
   )
 }
 
+/** The next appointments that are still on (pending or confirmed), soonest first. */
+export async function getUpcomingBookings(limit = 5): Promise<Booking[]> {
+  const supabase = await createClient()
+  return unwrap(
+    await supabase
+      .from("bookings")
+      .select("*, service:services(name, duration_minutes, price)")
+      .in("status", ["pending", "confirmed"])
+      .gte("starts_at", new Date().toISOString())
+      .order("starts_at", { ascending: true })
+      .limit(limit),
+    [],
+  )
+}
+
 export async function getDashboardStats() {
   const supabase = await createClient()
   const count = (table: keyof Database["public"]["Tables"], filter?: [string, string]) => {

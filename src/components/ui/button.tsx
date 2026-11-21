@@ -33,6 +33,8 @@ export interface ButtonProps
     VariantProps<typeof buttonVariants> {
   asChild?: boolean
   loading?: boolean
+  /** React 19 passes `ref` as an ordinary prop, so it is forwarded through the spread below. */
+  ref?: React.Ref<HTMLButtonElement>
 }
 
 export function Button({ className, variant, size, asChild, loading, children, disabled, ...props }: ButtonProps) {

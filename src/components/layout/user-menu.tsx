@@ -13,12 +13,12 @@ const item = "flex cursor-pointer items-center gap-2 rounded-sm px-2 py-2 text-s
 export function UserMenu() {
   const user = useAuth()
   const [, start] = useTransition()
-  if (user.status === "loading") return <div className="size-11 md:ml-1 md:h-8 md:w-[74px]" aria-hidden />
+  if (user.status === "loading") return <div className="size-11 lg:ml-1 lg:h-8 lg:w-[74px]" aria-hidden />
   if (user.status === "anon") {
     return (
       <>
-        <Button asChild variant="ghost" size="icon" className="md:hidden"><Link href="/login" aria-label="Sign in"><User /></Link></Button>
-        <Button asChild size="sm" className="ml-1 hidden md:inline-flex"><Link href="/login">Sign in</Link></Button>
+        <Button asChild variant="ghost" size="icon" className="lg:hidden"><Link href="/login" aria-label="Sign in"><User /></Link></Button>
+        <Button asChild size="sm" className="ml-1 hidden lg:inline-flex"><Link href="/login">Sign in</Link></Button>
       </>
     )
   }

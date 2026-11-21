@@ -31,7 +31,7 @@ export function ProductGallery({ images, name }: { images: string[]; name: strin
     strip.current?.children[i]?.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" })
 
   return (
-    <section aria-roledescription="carousel" aria-label={`${name} photos`} className="-mx-4 sm:mx-0">
+    <section aria-roledescription="carousel" aria-label={`${name} photos`} className="-mx-4 min-w-0 sm:mx-0">
       <div className="relative">
         <ul ref={strip}
           className="flex snap-x snap-mandatory overflow-x-auto overscroll-x-contain sm:rounded-xl [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">

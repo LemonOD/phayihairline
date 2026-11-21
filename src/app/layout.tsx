@@ -3,8 +3,6 @@ import { Inter, Playfair_Display } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import "./globals.css"
 import { Providers } from "@/components/layout/providers"
-import { SiteHeader } from "@/components/layout/site-header"
-import { SiteFooter } from "@/components/layout/site-footer"
 import { siteConfig } from "@/lib/utils"
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" })
@@ -12,7 +10,7 @@ const playfair = Playfair_Display({ subsets: ["latin"], variable: "--font-playfa
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
-  title: { default: "Luxury Wigs, Bundles & Frontals in Lagos · PhayiHairline", template: "%s · PhayiHairline" },
+  title: { default: "PhayiHairline - Luxury Wigs, Bundles & Frontals in Lagos", template: "%s · PhayiHairline" },
   alternates: { canonical: "./" },
   description:
     "Shop luxury wigs, bundles, closures and frontals in Lagos. Premium hair, affordable luxury, with custom units and revamping.",
@@ -38,11 +36,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           className="sr-only z-[60] rounded-md bg-primary px-4 py-2 text-primary-foreground focus:not-sr-only focus:fixed focus:left-4 focus:top-4">
           Skip to content
         </a>
-        <Providers>
-          <SiteHeader />
-          <main id="main" tabIndex={-1} className="min-h-[70dvh] outline-none">{children}</main>
-          <SiteFooter />
-        </Providers>
+        {/* Header and footer live in the (site) group layout; sign-in and admin have their own frames. */}
+        <Providers>{children}</Providers>
         {process.env.VERCEL && <Analytics />}
       </body>
     </html>

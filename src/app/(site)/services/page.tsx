@@ -7,7 +7,7 @@ import { Card } from "@/components/ui/card"
 import { PageTransition, Reveal, Stagger, StaggerItem } from "@/components/ui/motion"
 import { Container, SectionHeading } from "@/components/ui/section"
 import { getServices } from "@/lib/data/services"
-import { formatNaira, siteConfig } from "@/lib/utils"
+import { formatServicePrice, siteConfig } from "@/lib/utils"
 
 export const metadata: Metadata = {
   title: "Wig Installation in Lagos",
@@ -41,7 +41,7 @@ export default async function ServicesPage() {
             description: s.description,
             areaServed: "Ikorodu, Lagos",
             provider: { "@id": `${siteConfig.url}/#business` },
-            offers: { "@type": "Offer", price: s.price, priceCurrency: "NGN" },
+            ...(s.price !== null && { offers: { "@type": "Offer", price: s.price, priceCurrency: "NGN" } }),
           },
         })),
       }} />
@@ -55,7 +55,7 @@ export default async function ServicesPage() {
               <Card className="flex h-full flex-col p-6 transition-shadow hover:shadow-lg">
                 <div className="flex items-start justify-between gap-3">
                   <h3 className="text-xl font-semibold">{s.name}</h3>
-                  <span className="text-lg font-semibold text-accent-text">{formatNaira(s.price)}</span>
+                  <span className={s.price === null ? "text-sm font-medium text-accent-text" : "text-lg font-semibold text-accent-text"}>{formatServicePrice(s.price)}</span>
                 </div>
                 <p className="mt-1 flex items-center gap-1 text-sm text-muted-foreground"><Clock className="size-3.5" /> {duration(s.duration_minutes)}</p>
                 <p className="mt-3 text-sm text-muted-foreground">{s.description}</p>

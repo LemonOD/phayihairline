@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 import {
-  bookingSchema, checkoutSchema, contactSchema, passwordSchema, productSchema, registerSchema, reviewSchema,
+  bookingSchema, checkoutSchema, contactSchema, passwordSchema, productSchema, registerSchema, reviewSchema, serviceSchema,
 } from "@/lib/validation/schemas"
 
 const uuid = "123e4567-e89b-42d3-a456-426614174000"
@@ -100,5 +100,22 @@ describe("productSchema images", () => {
   })
   it.each(["javascript:alert(1)", "//evil.example/x.jpg", "http://insecure.example/x.jpg", "x.jpg"])("rejects %s", (img) => {
     expect(ok([img])).toBe(false)
+  })
+})
+
+describe("serviceSchema price", () => {
+  const base = { name: "Custom install", duration_minutes: "120" }
+
+  it("keeps a fixed price, coercing the form string", () => {
+    expect(serviceSchema.parse({ ...base, price: "15000" }).price).toBe(15000)
+  })
+
+  it("accepts no price (null or blank) as 'based on request'", () => {
+    expect(serviceSchema.parse({ ...base, price: null }).price).toBeNull()
+    expect(serviceSchema.parse({ ...base, price: "" }).price).toBeNull()
+  })
+
+  it("still rejects a negative price", () => {
+    expect(serviceSchema.safeParse({ ...base, price: "-5" }).success).toBe(false)
   })
 })

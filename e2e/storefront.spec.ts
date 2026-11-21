@@ -29,7 +29,7 @@ test("browse → choose variant → cart → checkout summary", async ({ page })
 
 test("checkout validates before submitting", async ({ page }) => {
   await page.goto(PRODUCT)
-  await page.getByRole("button", { name: "Add to cart" }).click()
+  await page.getByRole("button", { name: "Add to cart" }).first().click()
   await page.keyboard.press("Escape")
   await page.goto("/checkout")
 

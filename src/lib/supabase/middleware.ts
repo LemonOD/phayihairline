@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr"
 import { NextResponse, type NextRequest } from "next/server"
+import { homeFor } from "@/lib/auth-redirect"
 
 const PROTECTED = ["/account", "/admin"]
 const AUTH_PAGES = ["/login", "/register", "/forgot-password"]
@@ -33,8 +34,9 @@ export async function updateSession(request: NextRequest) {
   }
 
   if (data.user && AUTH_PAGES.includes(pathname)) {
+    const { data: profile } = await supabase.from("profiles").select("role").eq("id", data.user.id).maybeSingle()
     const url = request.nextUrl.clone()
-    url.pathname = "/account"
+    url.pathname = homeFor(profile?.role)
     url.search = ""
     return NextResponse.redirect(url)
   }

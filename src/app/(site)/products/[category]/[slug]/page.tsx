@@ -66,10 +66,10 @@ export default async function ProductPage({ params }: Props) {
           <ChevronRight className="size-3" /><span className="line-clamp-1 text-foreground">{product.name}</span>
         </nav>
 
-        <div className="grid gap-6 lg:grid-cols-2 lg:gap-10">
+        <div className="grid gap-6 md:grid-cols-2 md:gap-8 lg:gap-10">
           <ProductGallery images={product.images} name={product.name} />
 
-          <div className="space-y-6">
+          <div className="min-w-0 space-y-6">
             <div>
               {product.review_count > 0 && (
                 <a href="#reviews" className="mb-2 flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
