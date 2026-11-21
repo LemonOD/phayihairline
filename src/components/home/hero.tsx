@@ -29,8 +29,8 @@ export function Hero() {
       <Container className="relative grid items-center gap-8 pb-10 pt-8 md:gap-10 md:py-28 lg:grid-cols-[1.1fr_0.9fr]">
         <div className="max-w-3xl">
           <p className="rise mb-3 text-[11px] font-semibold uppercase tracking-[0.22em] text-accent-text sm:mb-4 sm:text-xs sm:tracking-[0.3em]">
-            <span className="sm:hidden">Luxury hair · Lagos</span>
-            <span className="hidden sm:inline">Lagos · Luxury hair · Wigs · Revamping</span>
+            <span className="sm:hidden">Luxury hair · Worldwide</span>
+            <span className="hidden sm:inline">Worldwide · Luxury hair · Wigs · Revamping</span>
           </p>
           <h1 className="rise-lift text-[2.5rem] font-semibold leading-[1.05] sm:text-5xl md:text-7xl">
             Luxury hair, <span className="italic text-accent-text">affordably</span> yours.
