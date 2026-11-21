@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Boxes, CalendarDays, LayoutDashboard, MessageSquare, Scissors, ShoppingBag, Star } from "lucide-react"
+import { Boxes, CalendarDays, Landmark, LayoutDashboard, MessageSquare, Scissors, ShoppingBag, Star } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 const items = [
@@ -13,6 +13,7 @@ const items = [
   { href: "/admin/services", label: "Services", icon: Scissors },
   { href: "/admin/reviews", label: "Reviews", icon: Star },
   { href: "/admin/messages", label: "Messages", icon: MessageSquare },
+  { href: "/admin/payments", label: "Payments", icon: Landmark },
 ] as const
 
 export type AdminCounts = { orders: number; bookings: number }

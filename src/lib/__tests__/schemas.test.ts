@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 import {
-  bookingSchema, checkoutSchema, contactSchema, passwordSchema, productSchema, registerSchema, reviewSchema, serviceSchema,
+  bookingSchema, checkoutSchema, contactSchema, passwordSchema, productSchema, registerSchema, reviewSchema, serviceSchema, bankDetailsSchema,
 } from "@/lib/validation/schemas"
 
 const uuid = "123e4567-e89b-42d3-a456-426614174000"
@@ -117,5 +117,40 @@ describe("serviceSchema price", () => {
 
   it("still rejects a negative price", () => {
     expect(serviceSchema.safeParse({ ...base, price: "-5" }).success).toBe(false)
+  })
+})
+
+describe("bankDetailsSchema", () => {
+  const base = { bankName: "GTBank", accountName: "Phayi Hairline", accountNumber: "0123456789" }
+
+  it("accepts a 10-digit account number and tidies spaces", () => {
+    expect(bankDetailsSchema.parse({ ...base, accountNumber: "0123 456 789" }).accountNumber).toBe("0123456789")
+  })
+
+  it("rejects numbers that aren't 10 digits", () => {
+    expect(bankDetailsSchema.safeParse({ ...base, accountNumber: "12345" }).success).toBe(false)
+    expect(bankDetailsSchema.safeParse({ ...base, accountNumber: "01234abcde" }).success).toBe(false)
+  })
+
+  it("requires the bank and account name", () => {
+    expect(bankDetailsSchema.safeParse({ ...base, bankName: "" }).success).toBe(false)
+    expect(bankDetailsSchema.safeParse({ ...base, accountName: " " }).success).toBe(false)
+  })
+})
+
+describe("checkout email (optional)", () => {
+  const ok = {
+    name: "Ada", phone: "08012345678", address: "12 Lagos Road, Ikorodu",
+    items: [{ product_id: uuid, quantity: 1 }],
+  }
+
+  it("is optional, and a blank value is fine", () => {
+    expect(checkoutSchema.safeParse(ok).success).toBe(true)
+    expect(checkoutSchema.safeParse({ ...ok, email: "" }).success).toBe(true)
+  })
+
+  it("accepts a real address and rejects a malformed one", () => {
+    expect(checkoutSchema.safeParse({ ...ok, email: "ada@example.com" }).success).toBe(true)
+    expect(checkoutSchema.safeParse({ ...ok, email: "ada@" }).success).toBe(false)
   })
 })

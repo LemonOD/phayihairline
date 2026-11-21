@@ -14,6 +14,6 @@ test("customer places an order and is handed to WhatsApp", async ({ page }) => {
   await page.getByRole("button", { name: "Place order" }).click()
 
   await expect(page.getByRole("heading", { name: /Order PH-[A-Z0-9]{6} received/ })).toBeVisible()
-  const link = page.getByRole("link", { name: /Continue on WhatsApp/ })
+  const link = page.getByRole("link", { name: /continue on WhatsApp/i })
   await expect(link).toHaveAttribute("href", /^https:\/\/wa\.me\/\d+\?text=/)
 })

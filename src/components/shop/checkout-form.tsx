@@ -5,15 +5,15 @@ import { useEffect, useRef, useState, useTransition } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import type { z } from "zod"
-import { motion } from "framer-motion"
-import { CheckCircle2, ChevronDown, MessageCircle } from "lucide-react"
+import { ChevronDown } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Field } from "@/components/ui/field"
 import { Input, Textarea } from "@/components/ui/input"
 import { ProductImage } from "@/components/ui/product-image"
+import { PaymentStep, type Customer, type PaidItem } from "@/components/shop/payment-step"
 import { placeOrder } from "@/lib/actions/orders"
-import { checkoutFormSchema } from "@/lib/validation/schemas"
+import { checkoutFormSchema, type BankDetails } from "@/lib/validation/schemas"
 import { useCart, cartTotal } from "@/stores/cart"
 import { track } from "@/lib/analytics"
 import { usePrefill } from "@/hooks/use-prefill"
@@ -23,7 +23,10 @@ import { orderMessage, whatsappLink } from "@/lib/whatsapp"
 
 type Values = z.infer<typeof checkoutFormSchema>
 
-type Placed = { link: string; reference: string }
+type Placed = {
+  link: string; reference: string; total: number; bank: BankDetails | null
+  items: PaidItem[]; customer: Customer; emailedTo: string | null
+}
 
 export function CheckoutForm() {
   const mounted = useMounted()
@@ -36,11 +39,12 @@ export function CheckoutForm() {
   const [pending, start] = useTransition()
   const { register, handleSubmit, getValues, setValue, formState: { errors } } = useForm<Values>({
     resolver: zodResolver(checkoutFormSchema),
-    defaultValues: { name: "", phone: "", address: "" },
+    defaultValues: { name: "", phone: "", email: "", address: "" },
   })
   usePrefill((p) => {
     if (!getValues("name")) setValue("name", p.name)
     if (!getValues("phone")) setValue("phone", p.phone)
+    if (!getValues("email")) setValue("email", p.email)
   })
 
   useEffect(() => {
@@ -49,20 +53,7 @@ export function CheckoutForm() {
     track("begin_checkout", { items: lines.length, value: cartTotal(lines) })
   }, [mounted, lines])
 
-  if (placed) {
-    return (
-      <motion.div initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }}
-        className="mx-auto max-w-md space-y-5 py-10 text-center">
-        <CheckCircle2 className="mx-auto size-16 text-emerald-500" />
-        <h2 className="text-3xl font-semibold">Order {placed.reference} received</h2>
-        <p className="text-muted-foreground">One last step: send your order to us on WhatsApp so we can confirm payment and delivery.</p>
-        <Button asChild size="lg" variant="accent" className="w-full">
-          <a href={placed.link} target="_blank" rel="noopener noreferrer" onClick={() => track("whatsapp_click", { from: "checkout" })}><MessageCircle /> Continue on WhatsApp</a>
-        </Button>
-        <Button asChild variant="ghost"><Link href="/">Back to home</Link></Button>
-      </motion.div>
-    )
-  }
+  if (placed) return <PaymentStep {...placed} whatsappHref={placed.link} />
 
   if (mounted && lines.length === 0) {
     return (
@@ -80,12 +71,17 @@ export function CheckoutForm() {
       const res = await placeOrder({ ...values, items })
       if (!res.ok) return setError(res.error)
 
-      const { reference, total, items: priced } = res.data
+      const { reference, total, items: priced, bank, emailedTo } = res.data
       track("order_placed", { items: lines.length, value: total })
       // Prefer the lines the server actually charged; the saved cart can hold stale prices.
       const charged = priced?.map((i) => ({ name: i.name, price: i.price, quantity: i.quantity, variantLabel: i.variant ?? null }))
-      const message = orderMessage({ ...values, reference, total, items: charged ?? lines })
-      setPlaced({ reference, link: whatsappLink(message) })
+      // With bank details configured the customer pays first, so the message says they've paid.
+      const paidItems: PaidItem[] = charged ?? lines.map((l) => ({ name: l.name, price: l.price, quantity: l.quantity, variantLabel: l.variantLabel }))
+      const message = orderMessage({ ...values, reference, total, items: paidItems, paid: !!bank })
+      setPlaced({
+        reference, total, bank, emailedTo, items: paidItems, link: whatsappLink(message),
+        customer: { name: values.name, phone: values.phone, address: values.address },
+      })
       clear()
     })
   }
@@ -129,6 +125,9 @@ export function CheckoutForm() {
         </Field>
         <Field label="Phone number" htmlFor="phone" error={errors.phone?.message} hint="We'll reach you on this number">
           <Input id="phone" type="tel" inputMode="tel" autoComplete="tel" enterKeyHint="next" {...register("phone")} />
+        </Field>
+        <Field label="Email (optional)" htmlFor="email" error={errors.email?.message} hint="We'll email you the order summary and payment details">
+          <Input id="email" type="email" inputMode="email" autoComplete="email" enterKeyHint="next" {...register("email")} />
         </Field>
         <Field label="Delivery address" htmlFor="address" error={errors.address?.message}>
           <Textarea id="address" autoComplete="street-address" {...register("address")} />

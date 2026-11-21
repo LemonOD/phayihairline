@@ -1,5 +1,6 @@
 import "server-only"
 import { formatNaira, siteConfig } from "@/lib/utils"
+import { whatsappLink } from "@/lib/whatsapp"
 
 /**
  * Email notifications via Resend's HTTP API (no SDK needed).
@@ -89,3 +90,43 @@ export const emailWelcome = (u: { email: string; name?: string | null }) =>
     ],
     cta: { label: "Start shopping", url: `${siteConfig.url}/products/wigs` },
   })
+
+/** The order summary plus where to pay, so the customer keeps the details after closing the checkout page. */
+export const emailOrderReceived = (o: {
+  to: string
+  name: string
+  reference: string
+  total: number
+  address: string
+  items: { name: string; price: number; quantity: number; variantLabel?: string | null }[]
+  bank: { bankName: string; accountName: string; accountNumber: string } | null
+}) => {
+  const items = o.items.map((i) =>
+    `• ${i.quantity} × ${i.name}${i.variantLabel ? ` (${i.variantLabel})` : ""} — ${formatNaira(i.price * i.quantity)}`)
+  const payment = o.bank
+    ? [
+        `To pay, transfer ${formatNaira(o.total)} to:`,
+        `Bank: ${o.bank.bankName}`,
+        `Account name: ${o.bank.accountName}`,
+        `Account number: ${o.bank.accountNumber}`,
+        `Please use ${o.reference} as the transfer description, then send your receipt to us on WhatsApp so we can confirm your order.`,
+      ]
+    : ["We'll confirm payment and delivery with you on WhatsApp."]
+
+  return send({
+    to: o.to,
+    subject: `Your order ${o.reference} · ${siteConfig.name}`,
+    lines: [
+      `Hi ${o.name}, thanks for your order!`,
+      `Order ${o.reference}`,
+      ...items,
+      `Total: ${formatNaira(o.total)}`,
+      `Delivery to: ${o.address}`,
+      ...payment,
+    ],
+    cta: {
+      label: "Send receipt on WhatsApp",
+      url: whatsappLink(`Hello ${siteConfig.name}! I've just paid for my order ${o.reference}. I'll send my receipt here.`),
+    },
+  })
+}

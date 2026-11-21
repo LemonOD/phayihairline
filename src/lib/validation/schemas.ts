@@ -29,6 +29,8 @@ export const passwordSchema = z
 export const checkoutSchema = z.object({
   name: z.string().trim().min(2, "Enter your name"),
   phone: phoneSchema,
+  /** Optional: when given, we email the order summary and payment details. */
+  email: z.string().trim().email("Enter a valid email").optional().or(z.literal("")),
   address: z.string().trim().min(8, "Enter your delivery address"),
   items: z
     .array(z.object({
@@ -127,3 +129,14 @@ export const serviceSchema = z.object({
 })
 
 export type ProductInput = z.infer<typeof productSchema>
+
+/** Where customers send payment after checkout. Nigerian bank (NUBAN) account numbers are 10 digits. */
+export const bankDetailsSchema = z.object({
+  bankName: z.string().trim().min(2, "Enter the bank name").max(60),
+  accountName: z.string().trim().min(2, "Enter the account name").max(80),
+  accountNumber: z.string().trim()
+    .transform((v) => v.replace(/[\s-]/g, ""))
+    .pipe(z.string().regex(/^\d{10}$/, "Account number must be 10 digits")),
+})
+
+export type BankDetails = z.infer<typeof bankDetailsSchema>

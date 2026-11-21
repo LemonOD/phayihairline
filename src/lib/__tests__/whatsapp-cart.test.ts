@@ -25,6 +25,16 @@ describe("whatsapp", () => {
     expect(msg).toContain("PH-ABC123")
     expect(msg).toMatch(/2 × Wig \(18"\)/)
     expect(msg).toContain("Ikorodu")
+    expect(msg).toContain("complete my order")
+  })
+  it("says the customer has paid once they have used the bank details", () => {
+    const msg = orderMessage({
+      reference: "PH-ABC123", name: "Ada", phone: "0815", address: "Ikorodu", total: 10000, paid: true,
+      items: [{ name: "Wig", price: 10000, quantity: 1 }],
+    })
+    expect(msg).toContain("just paid")
+    expect(msg).toContain("PH-ABC123")
+    expect(msg).not.toContain("complete my order")
   })
 })
 

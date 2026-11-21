@@ -8,7 +8,7 @@ Supabase (Auth, Postgres + RLS, Storage) · Framer Motion · Zustand · React Ho
 
 ## Setup
 
-1. Create a Supabase project, then run the files in `supabase/migrations/` in order (0001 → 0007), then
+1. Create a Supabase project, then run the files in `supabase/migrations/` in order (0001 → 0008), then
    `supabase/seed.sql` and optionally `supabase/seed_variants.sql`, in the SQL editor (or `supabase db push`).
 2. `cp .env.example .env.local` and fill in the project URL and the **publishable** key (`sb_publishable_…`).
    Never put a secret/service-role key in a `NEXT_PUBLIC_` variable.

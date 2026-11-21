@@ -79,6 +79,11 @@ export type Database = {
         },
         [Rel<"product_id", "products", "product_variants_product_id_fkey">]
       >
+      site_settings: Table<{
+        key: string
+        value: Json
+        updated_at: string
+      }>
       services: Table<{
         id: string
         slug: string
